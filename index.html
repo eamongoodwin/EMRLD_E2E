@@ -687,6 +687,46 @@
             polling = setInterval(loadMessages, 3000);
         }
 
+        // Copy Room ID to clipboard
+        async function copyRoomId() {
+            if (!currentRoom) return;
+    
+            try {
+                await navigator.clipboard.writeText(currentRoom.id);
+        
+                // Show visual feedback
+                const roomSpan = document.getElementById('roomIdSpan');
+                const originalText = roomSpan.textContent;
+        
+                roomSpan.textContent = 'Copied!';
+                roomSpan.style.color = '#28a745';
+        
+                // Reset after 1 second
+                setTimeout(() => {
+                    roomSpan.textContent = originalText;
+                    roomSpan.style.color = '#1e3c72';
+                }, 1000);
+        
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = currentRoom.id;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+        
+                // Show feedback
+                const roomSpan = document.getElementById('roomIdSpan');
+                const originalText = roomSpan.textContent;
+                roomSpan.textContent = 'Copied!';
+        
+                setTimeout(() => {
+                    roomSpan.textContent = originalText;
+                }, 1000);
+            }
+        }
+        
         // Message Sending with optimistic updates
         async function sendMessage() {
             const messageText = document.getElementById('messageInput').value.trim();
