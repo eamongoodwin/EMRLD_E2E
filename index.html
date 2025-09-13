@@ -383,12 +383,15 @@
                     <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                         <div id="turnstile-widget"
                              class="cf-turnstile"
-                             data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
+                             data-sitekey="0x4AAAAAAAz4EglWgeorOmzQ"
                              data-theme="auto"
                              data-callback="onInitialVerification"
                              data-expired-callback="onInitialVerificationExpired">
                         </div>
                     </div>
+
+                    <!-- Invisible turnstile widget for token minting -->
+                    <div id="ts-invisible"></div>
 
                     <div id="verificationStatus" aria-live="polite"></div>
                 </div>
@@ -670,26 +673,76 @@
             return false;
         }
 
-        // Get fresh Turnstile token using proper widget ID
-        async function freshTurnstileToken() {
-            // Ensure we have the widget id (in case the script finished rendering later)
-            if (!tsWidgetId) captureWidgetId();
+        // Wait for Turnstile to load
+        function waitForTurnstile() {
+            return new Promise((resolve) => {
+                if (window.turnstile) {
+                    resolve();
+                } else {
+                    const checkTurnstile = () => {
+                        if (window.turnstile) {
+                            resolve();
+                        } else {
+                            setTimeout(checkTurnstile, 100);
+                        }
+                    };
+                    checkTurnstile();
+                }
+            });
+        }
 
-            if (!window.turnstile || !tsWidgetId) {
-                throw new Error('Turnstile not ready (no widget id).');
-            }
+        // Ensure invisible widget is rendered
+        let invisibleWidgetId = null;
+        async function ensureInvisibleWidget() {
+            if (invisibleWidgetId !== null) return invisibleWidgetId;
 
-            // Get current token; if empty, force a reset so the user completes it again
-            let token = window.turnstile.getResponse(tsWidgetId);
-            console.log('Retrieved token from widget ID:', token ? `${token.substring(0, 20)}...` : 'null');
+            await waitForTurnstile();
+            invisibleWidgetId = window.turnstile.render('#ts-invisible', {
+                sitekey: '0x4AAAAAAAz4EglWgeorOmzQ',
+                size: 'invisible',
+                callback: function(token) {
+                    console.log('Invisible widget callback fired');
+                }
+            });
+            console.log('Invisible widget rendered with ID:', invisibleWidgetId);
+            return invisibleWidgetId;
+        }
 
-            if (!token) {
-                window.turnstile.reset(tsWidgetId);
-                showStatus('Please complete the security check again.', 'error');
+        // Mint fresh token using invisible widget
+        async function mintToken(action = '') {
+            console.log('Minting fresh token for:', action);
+
+            try {
+                const widgetId = await ensureInvisibleWidget();
+
+                // Reset and execute
+                window.turnstile.reset(widgetId);
+                window.turnstile.execute(widgetId);
+
+                // Wait for token
+                return new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    const maxAttempts = 50; // 5 seconds
+
+                    const checkToken = () => {
+                        const token = window.turnstile.getResponse(widgetId);
+                        if (token) {
+                            console.log('Fresh token minted:', token.substring(0, 20) + '...');
+                            resolve(token);
+                        } else if (attempts >= maxAttempts) {
+                            console.error('Token minting timed out');
+                            reject(new Error('Token minting timeout'));
+                        } else {
+                            attempts++;
+                            setTimeout(checkToken, 100);
+                        }
+                    };
+                    checkToken();
+                });
+            } catch (error) {
+                console.error('Error minting token:', error);
                 return null;
             }
-
-            return token;
         }
 
         // Room Creation
@@ -714,9 +767,9 @@
 
 
             try {
-                // Get fresh Turnstile token using proper widget ID
+                // Get fresh Turnstile token using invisible widget
                 console.log('Getting fresh Turnstile token for room creation...');
-                const token = await freshTurnstileToken();
+                const token = await mintToken('create_room');
 
                 if (!token) {
                     isLoading = false;
@@ -797,9 +850,9 @@
             }
             
             try {
-                // Get fresh Turnstile token using proper widget ID
+                // Get fresh Turnstile token using invisible widget
                 console.log('Getting fresh Turnstile token for room join...');
-                const token = await freshTurnstileToken();
+                const token = await mintToken('join_room');
 
                 if (!token) {
                     isLoading = false;
@@ -1291,21 +1344,10 @@
     </script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script>
-      // Capture the internal widget ID after widget is rendered
-      function captureWidgetId() {
-        const el = document.getElementById('turnstile-widget');
-        if (window.turnstile && el) {
-          // For auto-rendered widgets, this returns the internal widget id
-          tsWidgetId = window.turnstile.getWidgetId(el);
-          console.log('Captured widget ID:', tsWidgetId);
-        }
-      }
-
       // Initial verification callbacks
-      function onInitialVerification(token) {
+      async function onInitialVerification(token) {
         console.log('Initial Turnstile verification successful');
 
-        captureWidgetId(); // Store widget id for later use
         savedTurnstileToken = token;
         isVerified = true;
 
