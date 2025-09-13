@@ -389,7 +389,7 @@
                 </div>
                 
                 <div class="grid">
-                  <div class="card">
+                  <div class="card" id="createCard">
                     <div id="createTab">
                       <h3>Start a Secure Chat</h3>
                       <div class="form-group">
@@ -418,35 +418,36 @@
                       </button>
                     </div>
                   </div>
-                </div>
-                        
-                        <div id="joinTab" class="hidden">
-                            <h3>Join Existing Room</h3>
-                            <div class="form-group">
-                                <label for="joinRoomId">Room ID</label>
-                                <input type="text" id="joinRoomId" placeholder="emerald_abc123" pattern="emerald_[a-zA-Z0-9]{8}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="joinPassword">Room Password</label>
-                                <input type="password" id="joinPassword" placeholder="Room password" minlength="6" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="joinUserName">Your Name</label>
-                                <input type="text" id="joinUserName" placeholder="Your Name" maxlength="30" required>
-                            </div>
 
-                            <!-- Cloudflare Turnstile widget (for manual joins) -->
-                            <div class="form-group">
-                                <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"></div>
-                            </div>
+                  <!-- NEW: Join card lives in the same grid and has the same styling -->
+                  <div class="card hidden" id="joinCard">
+                    <div id="joinTab">
+                      <h3>Join Existing Room</h3>
+                      <div class="form-group">
+                        <label for="joinRoomId">Room ID</label>
+                        <input type="text" id="joinRoomId" placeholder="emerald_abc123" pattern="emerald_[a-zA-Z0-9]{8}" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="joinPassword">Room Password</label>
+                        <input type="password" id="joinPassword" placeholder="Room password" minlength="6" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="joinUserName">Your Name</label>
+                        <input type="text" id="joinUserName" placeholder="Your Name" maxlength="30" required>
+                      </div>
 
-                            <button class="btn btn-success" onclick="joinRoom()">
-                                Join Secure Chat
-                            </button>
-                        </div>
+                      <!-- Cloudflare Turnstile widget (for manual joins) -->
+                      <div class="form-group">
+                        <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"></div>
+                      </div>
+
+                      <button class="btn btn-success" onclick="joinRoom()">
+                        Join Secure Chat
+                      </button>
                     </div>
-                    
-                    <div class="card">
+                  </div>
+
+                  <div class="card">
                         <div class="features">
                             <h3>🛡️ Keyforge Security</h3>
                             <ul>
@@ -563,11 +564,20 @@
 
         // Tab Management
         function switchTab(tab) {
+            // tab button state
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab')[tab === 'create' ? 0 : 1].classList.add('active');
 
-            document.getElementById('createTab').classList.toggle('hidden', tab !== 'create');
-            document.getElementById('joinTab').classList.toggle('hidden', tab !== 'join');
+            // show/hide whole cards so the styling stays consistent
+            const createCard = document.getElementById('createCard');
+            const joinCard   = document.getElementById('joinCard');
+            if (tab === 'create') {
+                createCard.classList.remove('hidden');
+                joinCard.classList.add('hidden');
+            } else {
+                createCard.classList.add('hidden');
+                joinCard.classList.remove('hidden');
+            }
         }
 
         // Turnstile helpers
