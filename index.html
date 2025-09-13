@@ -580,6 +580,21 @@
             if (window.turnstile && el) window.turnstile.reset(el);
         }
 
+        // Verify Turnstile token with backend
+        async function verifyTurnstile(token) {
+            try {
+                const response = await fetch('/api/turnstile/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'cf-turnstile-response': token })
+                });
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                return { success: false, 'error-codes': ['network-error'] };
+            }
+        }
+
         // Room Creation
         async function createRoom() {
             if (isLoading) return;
@@ -608,7 +623,14 @@
             }
 
             try {
-                // 1) Create
+                // 1) Verify Turnstile first
+                const verifyResult = await verifyTurnstile(tsToken);
+                if (!verifyResult.success) {
+                    showStatus(`Verification failed: ${(verifyResult['error-codes'] || []).join(', ')}`, 'error');
+                    return;
+                }
+
+                // 2) Create room
                 const createRes = await fetch('/api/room/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -624,7 +646,7 @@
                 // Prefill the join box for convenience
                 document.getElementById('joinRoomId').value = roomId;
 
-                // 2) Immediately join the room we just created
+                // 3) Immediately join the room we just created
                 const joinRes = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -637,7 +659,7 @@
                     return;
                 }
 
-                // 3) Enter chat
+                // 4) Enter chat
                 currentRoom = { id: roomId, name: joinJson.room.name || roomName, password };
                 currentUser = userName;
                 enterChat();
@@ -680,6 +702,14 @@
             }
             
             try {
+                // 1) Verify Turnstile first
+                const verifyResult = await verifyTurnstile(tsToken);
+                if (!verifyResult.success) {
+                    showStatus(`Verification failed: ${(verifyResult['error-codes'] || []).join(', ')}`, 'error');
+                    return;
+                }
+
+                // 2) Join room
                 const response = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
