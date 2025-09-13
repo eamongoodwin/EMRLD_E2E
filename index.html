@@ -573,6 +573,7 @@
         let optimisticMessages = new Map();
         let isVerified = false;
         let savedTurnstileToken = null;
+        let tsWidgetId = null;
 
         // Initialize application
         function initializeApp() {
@@ -669,6 +670,28 @@
             return false;
         }
 
+        // Get fresh Turnstile token using proper widget ID
+        async function freshTurnstileToken() {
+            // Ensure we have the widget id (in case the script finished rendering later)
+            if (!tsWidgetId) captureWidgetId();
+
+            if (!window.turnstile || !tsWidgetId) {
+                throw new Error('Turnstile not ready (no widget id).');
+            }
+
+            // Get current token; if empty, force a reset so the user completes it again
+            let token = window.turnstile.getResponse(tsWidgetId);
+            console.log('Retrieved token from widget ID:', token ? `${token.substring(0, 20)}...` : 'null');
+
+            if (!token) {
+                window.turnstile.reset(tsWidgetId);
+                showStatus('Please complete the security check again.', 'error');
+                return null;
+            }
+
+            return token;
+        }
+
         // Room Creation
         async function createRoom() {
             if (isLoading || !requireVerification('create room')) return;
@@ -691,16 +714,11 @@
 
 
             try {
-                // Get fresh Turnstile token
+                // Get fresh Turnstile token using proper widget ID
                 console.log('Getting fresh Turnstile token for room creation...');
-                console.log('window.turnstile available:', !!window.turnstile);
-                console.log('widget element exists:', !!document.getElementById('turnstile-widget'));
-
-                const token = window.turnstile ? window.turnstile.getResponse('turnstile-widget') : null;
-                console.log('Retrieved token:', token ? `${token.substring(0, 20)}...` : 'null');
+                const token = await freshTurnstileToken();
 
                 if (!token) {
-                    showStatus('Security check failed – please refresh the page and retry verification.', 'error');
                     isLoading = false;
                     return;
                 }
@@ -779,12 +797,11 @@
             }
             
             try {
-                // Get fresh Turnstile token
+                // Get fresh Turnstile token using proper widget ID
                 console.log('Getting fresh Turnstile token for room join...');
-                const token = window.turnstile ? window.turnstile.getResponse('turnstile-widget') : null;
+                const token = await freshTurnstileToken();
 
                 if (!token) {
-                    showStatus('Security check failed – please refresh the page and retry verification.', 'error');
                     isLoading = false;
                     return;
                 }
@@ -1274,11 +1291,21 @@
     </script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script>
+      // Capture the internal widget ID after widget is rendered
+      function captureWidgetId() {
+        const el = document.getElementById('turnstile-widget');
+        if (window.turnstile && el) {
+          // For auto-rendered widgets, this returns the internal widget id
+          tsWidgetId = window.turnstile.getWidgetId(el);
+          console.log('Captured widget ID:', tsWidgetId);
+        }
+      }
+
       // Initial verification callbacks
       function onInitialVerification(token) {
-        console.log('Initial Turnstile verification successful, saving token for room operations');
+        console.log('Initial Turnstile verification successful');
 
-        // Save token for room operations (don't verify it yet - save for actual use)
+        captureWidgetId(); // Store widget id for later use
         savedTurnstileToken = token;
         isVerified = true;
 
