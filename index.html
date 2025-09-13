@@ -455,7 +455,7 @@
                             <h1 id="roomTitle">room title</h1>
                         </div>
                     </div>
-                    <div class="badge">Live Chat</div>
+                    <div class="badge">Live</div>
                 </div>
                 
                 <div class="room-info">
@@ -466,7 +466,7 @@
                     </div>
                     <div class="status-indicator">
                         <div class="pulse"></div>
-                        <span>E2E</span>
+                        <span>Secured</span>
                     </div>
                 </div>
                 
@@ -508,9 +508,8 @@
                     </div>
                     
                     <div class="decrypt-area">
-                        <strong>EMRLD Chain Decryption Active</strong>
-                        <p>Messages automatically decrypted using 8-pass AES-256-CBC with QKD-derived key unmasking. 
-                        Multi-layer quantum-resistant decryption ensures only authorized participants can access plaintext content.</p>
+                        <strong>EMRLD Chain</strong>
+                        <p>Only authorized participants can access plaintext content.</p>
                     </div>
                 </div>
             </div>
@@ -857,7 +856,7 @@
             if (!statusElement) return;
             
             if (isConnected) {
-                statusElement.textContent = '🔒 Secured';
+                statusElement.textContent = 'E2E';
                 statusElement.style.color = '#10b981';
             } else {
                 statusElement.textContent = '⚠️ Reconnecting...';
