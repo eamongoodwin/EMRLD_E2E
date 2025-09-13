@@ -379,20 +379,18 @@
                     Resilient • Layered • Quantum-Ready
                 </div>
                 
-                <div class="tabs" role="tablist" aria-label="Room actions">
-                    <button class="tab active" role="tab" aria-selected="true" aria-controls="createCard"
-                            onclick="switchTab('create')">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('create')">
                         <span>Create Room</span>
                     </button>
-                    <button class="tab" role="tab" aria-selected="false" aria-controls="joinCard"
-                            onclick="switchTab('join')">
+                    <button class="tab" onclick="switchTab('join')">
                         <span>Join Room</span>
                     </button>
                 </div>
                 
                 <div class="grid">
-                  <div class="card" id="createCard" role="tabpanel" aria-labelledby="createTab">
-                    <form id="createTab" onsubmit="event.preventDefault(); createRoom();">
+                  <div class="card">
+                    <div id="createTab">
                       <h3>Start a Secure Chat</h3>
                       <div class="form-group">
                         <label for="createRoomName">Room Name</label>
@@ -400,7 +398,7 @@
                       </div>
                       <div class="form-group">
                         <label for="createPassword">Room Password</label>
-                        <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6" autocomplete="new-password" required>
+                        <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6" required>
                       </div>
                       <div class="form-group">
                         <label for="createUserName">Your Name</label>
@@ -411,51 +409,44 @@
                       <div class="form-group">
                         <div class="cf-turnstile"
                              data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
-                             data-theme="auto"
-                             data-callback="onTsOKCreate"
-                             data-expired-callback="onTsExpiredCreate">
+                             data-theme="auto">
                         </div>
                       </div>
 
-                      <button id="createBtn" class="btn btn-primary" type="submit" disabled>
+                      <button class="btn btn-primary" onclick="createRoom()">
                         Create Secure Room
                       </button>
-                    </form>
+                    </div>
                   </div>
+                </div>
+                        
+                        <div id="joinTab" class="hidden">
+                            <h3>Join Existing Room</h3>
+                            <div class="form-group">
+                                <label for="joinRoomId">Room ID</label>
+                                <input type="text" id="joinRoomId" placeholder="emerald_abc123" pattern="emerald_[a-zA-Z0-9]{8}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="joinPassword">Room Password</label>
+                                <input type="password" id="joinPassword" placeholder="Room password" minlength="6" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="joinUserName">Your Name</label>
+                                <input type="text" id="joinUserName" placeholder="Your Name" maxlength="30" required>
+                            </div>
 
-                  <!-- NEW: Join card lives in the same grid and has the same styling -->
-                  <div class="card hidden" id="joinCard" role="tabpanel" aria-labelledby="joinTab">
-                    <form id="joinTab" onsubmit="event.preventDefault(); joinRoom();">
-                      <h3>Join Existing Room</h3>
-                      <div class="form-group">
-                        <label for="joinRoomId">Room ID</label>
-                        <input type="text" id="joinRoomId" placeholder="emerald_ab12CD34"
-                               pattern="emerald_[A-Za-z0-9]{8}"
-                               title='Format: "emerald_" followed by 8 letters or numbers'
-                               required>
-                      </div>
-                      <div class="form-group">
-                        <label for="joinPassword">Room Password</label>
-                        <input type="password" id="joinPassword" placeholder="Room password" minlength="6" autocomplete="current-password" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="joinUserName">Your Name</label>
-                        <input type="text" id="joinUserName" placeholder="Your Name" maxlength="30" required>
-                      </div>
+                            <!-- Cloudflare Turnstile widget (for manual joins) -->
+                            <div class="form-group">
+                                <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"></div>
+                            </div>
 
-                      <!-- Cloudflare Turnstile widget (for manual joins) -->
-                      <div class="form-group">
-                        <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"
-                             data-callback="onTsOKJoin" data-expired-callback="onTsExpiredJoin"></div>
-                      </div>
-
-                      <button id="joinBtn" class="btn btn-success" type="submit" disabled>
-                        Join Secure Chat
-                      </button>
-                    </form>
-                  </div>
-
-                  <div class="card">
+                            <button class="btn btn-success" onclick="joinRoom()">
+                                Join Secure Chat
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
                         <div class="features">
                             <h3>🛡️ Keyforge Security</h3>
                             <ul>
@@ -469,7 +460,7 @@
                     </div>
                 </div>
                 
-                <div id="setupStatus" aria-live="polite"></div>
+                <div id="setupStatus"></div>
             </div>
         
             <!-- Main Chat Interface -->
@@ -558,7 +549,7 @@
         // Initialize application
         function initializeApp() {
             console.log('Keyforge initialized');
-
+            
             // Add loading states to buttons
             document.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -568,45 +559,15 @@
                     }
                 });
             });
-
-            // Handle URL-based tab persistence and room prefilling
-            const qs = new URLSearchParams(location.search);
-            if (location.hash === '#join' || qs.get('tab') === 'join') {
-                switchTab('join');
-            }
-            const room = qs.get('room');
-            if (room) {
-                switchTab('join');
-                document.getElementById('joinRoomId').value = room;
-            }
         }
 
         // Tab Management
         function switchTab(tab) {
-            // tab button state
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(t => {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
-            });
-            const activeTab = tabs[tab === 'create' ? 0 : 1];
-            activeTab.classList.add('active');
-            activeTab.setAttribute('aria-selected', 'true');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab')[tab === 'create' ? 0 : 1].classList.add('active');
 
-            // show/hide whole cards so the styling stays consistent
-            const createCard = document.getElementById('createCard');
-            const joinCard   = document.getElementById('joinCard');
-            if (tab === 'create') {
-                createCard.classList.remove('hidden');
-                joinCard.classList.add('hidden');
-                resetTurnstile('#createTab');
-                document.getElementById('createRoomName')?.focus();
-            } else {
-                createCard.classList.add('hidden');
-                joinCard.classList.remove('hidden');
-                resetTurnstile('#joinTab');
-                document.getElementById('joinRoomId')?.focus();
-            }
+            document.getElementById('createTab').classList.toggle('hidden', tab !== 'create');
+            document.getElementById('joinTab').classList.toggle('hidden', tab !== 'join');
         }
 
         // Turnstile helpers
@@ -617,21 +578,6 @@
         function resetTurnstile(tabSelector) {
             const el = document.querySelector(`${tabSelector} .cf-turnstile`);
             if (window.turnstile && el) window.turnstile.reset(el);
-        }
-
-        // Verify Turnstile token with backend
-        async function verifyTurnstile(token) {
-            try {
-                const response = await fetch('/api/turnstile/verify', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ 'cf-turnstile-response': token })
-                });
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                return { success: false, 'error-codes': ['network-error'] };
-            }
         }
 
         // Room Creation
@@ -662,14 +608,7 @@
             }
 
             try {
-                // 1) Verify Turnstile first
-                const verifyResult = await verifyTurnstile(tsToken);
-                if (!verifyResult.success) {
-                    showStatus(`Verification failed: ${(verifyResult['error-codes'] || []).join(', ')}`, 'error');
-                    return;
-                }
-
-                // 2) Create room
+                // 1) Create
                 const createRes = await fetch('/api/room/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -685,7 +624,7 @@
                 // Prefill the join box for convenience
                 document.getElementById('joinRoomId').value = roomId;
 
-                // 3) Immediately join the room we just created
+                // 2) Immediately join the room we just created
                 const joinRes = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -698,7 +637,7 @@
                     return;
                 }
 
-                // 4) Enter chat
+                // 3) Enter chat
                 currentRoom = { id: roomId, name: joinJson.room.name || roomName, password };
                 currentUser = userName;
                 enterChat();
@@ -741,14 +680,6 @@
             }
             
             try {
-                // 1) Verify Turnstile first
-                const verifyResult = await verifyTurnstile(tsToken);
-                if (!verifyResult.success) {
-                    showStatus(`Verification failed: ${(verifyResult['error-codes'] || []).join(', ')}`, 'error');
-                    return;
-                }
-
-                // 2) Join room
                 const response = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1192,12 +1123,6 @@
         });
     </script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script>
-      function onTsOKCreate(){ document.getElementById('createBtn').disabled = false; }
-      function onTsExpiredCreate(){ document.getElementById('createBtn').disabled = true; }
-      function onTsOKJoin(){ document.getElementById('joinBtn').disabled = false; }
-      function onTsExpiredJoin(){ document.getElementById('joinBtn').disabled = true; }
-    </script>
 
     <noscript>
       <div class="error-message" style="margin-top:10px;">
