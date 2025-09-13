@@ -602,7 +602,7 @@
             document.getElementById('verificationScreen').classList.add('hidden');
             document.getElementById('setupScreen').classList.remove('hidden');
             document.getElementById('chatScreen').classList.add('hidden');
-            isVerified = true;
+            console.log('Showing main interface, isVerified =', isVerified);
 
             // Handle URL-based tab persistence and room prefilling
             const qs = new URLSearchParams(location.search);
@@ -644,6 +644,7 @@
 
         // Verification guard - ensures user completed initial verification
         function requireVerification(actionName) {
+            console.log(`requireVerification called for ${actionName}, isVerified =`, isVerified);
             if (!isVerified) {
                 showStatus('Please complete the security verification first', 'error');
                 return false;
@@ -1262,6 +1263,8 @@
             document.getElementById('verificationStatus').innerHTML =
               '<div class="success-message">✓ Verification successful! Redirecting...</div>';
 
+            console.log('Initial verification successful, setting isVerified = true');
+            isVerified = true;
             setTimeout(() => showMainInterface(), 1500);
           } else {
             document.getElementById('verificationStatus').innerHTML =
