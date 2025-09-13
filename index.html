@@ -601,10 +601,15 @@
 
         // Show main interface after verification
         function showMainInterface() {
-            document.getElementById('verificationScreen').classList.add('hidden');
+            // Hide verification screen but keep widget accessible by making it invisible instead of hidden
+            const verificationScreen = document.getElementById('verificationScreen');
+            verificationScreen.style.position = 'absolute';
+            verificationScreen.style.left = '-9999px';
+            verificationScreen.style.visibility = 'hidden';
+
             document.getElementById('setupScreen').classList.remove('hidden');
             document.getElementById('chatScreen').classList.add('hidden');
-            console.log('Showing main interface, isVerified =', isVerified);
+            console.log('Showing main interface, widget should still be accessible');
 
             // Handle URL-based tab persistence and room prefilling
             const qs = new URLSearchParams(location.search);
@@ -688,7 +693,11 @@
             try {
                 // Get fresh Turnstile token
                 console.log('Getting fresh Turnstile token for room creation...');
+                console.log('window.turnstile available:', !!window.turnstile);
+                console.log('widget element exists:', !!document.getElementById('turnstile-widget'));
+
                 const token = window.turnstile ? window.turnstile.getResponse('turnstile-widget') : null;
+                console.log('Retrieved token:', token ? `${token.substring(0, 20)}...` : 'null');
 
                 if (!token) {
                     showStatus('Security check failed – please refresh the page and retry verification.', 'error');
