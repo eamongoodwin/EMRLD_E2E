@@ -571,6 +571,7 @@
         let lastMessageId = null;
         let optimisticMessages = new Map();
         let isVerified = false;
+        let savedTurnstileToken = null;
 
         // Initialize application
         function initializeApp() {
@@ -689,7 +690,7 @@
                 const createRes = await fetch('/api/room/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomName, password })
+                    body: JSON.stringify({ roomName, password, token: savedTurnstileToken })
                 });
                 const createJson = await createRes.json();
                 console.log('Create room response:', createJson);
@@ -708,7 +709,7 @@
                 const joinRes = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomId, password })
+                    body: JSON.stringify({ roomId, password, token: savedTurnstileToken })
                 });
                 const joinJson = await joinRes.json();
                 console.log('Join room response:', joinJson);
@@ -761,7 +762,7 @@
                 const response = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomId, password })
+                    body: JSON.stringify({ roomId, password, token: savedTurnstileToken })
                 });
                 
                 const result = await response.json();
@@ -1273,7 +1274,8 @@
             document.getElementById('verificationStatus').innerHTML =
               '<div class="success-message">✓ Verification successful! Redirecting...</div>';
 
-            console.log('Initial verification successful, setting isVerified = true');
+            console.log('Initial verification successful, saving token and setting isVerified = true');
+            savedTurnstileToken = token; // Save the token for room operations
             isVerified = true;
             setTimeout(() => showMainInterface(), 1500);
           } else {
