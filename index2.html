@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Keyforge - Secure Messenger</title>
+  <link rel="icon" href="/logo_ani01.svg" type="image/svg+xml">
+  <meta name="description" content="Quantum-Grade Encryption. Secure end-to-end encrypted messaging with EMRLD Chain technology.">
+  <meta name="keywords" content="encryption, secure messaging, quantum, EMRLD, end-to-end">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      background:linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);
+      min-height:100vh; color:#333;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:20px;}
+    .header{background:#fff;border-radius:15px;padding:30px;margin-bottom:30px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1);}
+    .logo{width:90px;height:90px;margin-right:15px;}
+    .subtitle{color:#666;font-size:1.1rem;margin-bottom:20px;}
+    .info-banner{background:#e3f2fd;border:1px solid #2196f3;border-radius:10px;padding:20px;margin-bottom:30px;text-align:center;}
+    .tabs{display:flex;gap:10px;margin-bottom:30px;}
+    .tab{flex:1;padding:15px;border:2px solid #e9ecef;border-radius:10px;background:#fff;cursor:pointer;font-weight:600;transition:.3s;}
+    .tab.active{background:#1e3c72;color:#fff;border-color:#1e3c72;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:20px;margin-bottom:30px;}
+    .card{background:#fff;border-radius:15px;padding:25px;box-shadow:0 10px 30px rgba(0,0,0,.1);}
+    .card h3{color:#1e3c72;margin-bottom:20px;font-size:1.3rem;}
+    .form-group{margin-bottom:20px;}
+    .form-group label{display:block;margin-bottom:8px;font-weight:600;color:#1e3c72;}
+    .form-group input{width:100%;padding:15px;border:2px solid #e9ecef;border-radius:10px;font-size:1rem;}
+    .form-group input:focus{outline:none;border-color:#1e3c72;}
+    .btn{padding:12px 20px;border:none;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:600;transition:.3s;margin:5px;width:100%;}
+    .btn-primary{background:#1e3c72;color:#fff;}
+    .btn-success{background:#28a745;color:#fff;}
+    .btn-secondary{background:#6c757d;color:#fff;}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,0,0,.2);}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+    .features{background:#f8f9fa;border-radius:10px;padding:20px;}
+    .features ul{list-style:none;}
+    .features li{padding:8px 0;border-bottom:1px solid #e9ecef;}
+    .features li:last-child{border-bottom:none;}
+    .hidden{display:none;}
+    .chat-header{background:#fff;border-radius:15px;padding:20px;margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:space-between;}
+    .room-info{background:#fff;border-radius:15px;padding:15px 20px;margin-bottom:20px;box-shadow:0 5px 15px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center;}
+    .status-indicator{display:flex;align-items:center;gap:8px;}
+    .pulse{width:8px;height:8px;background:#28a745;border-radius:50%;animation:pulse 2s infinite;}
+    @keyframes pulse{0%{opacity:1}50%{opacity:.5}100%{opacity:1}}
+    .messages{background:#fff;border-radius:15px;padding:20px;margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,.1);height:400px;overflow-y:auto;}
+    .message{background:#f8f9fa;border-radius:12px;padding:15px;margin-bottom:15px;border-left:4px solid #6c757d;}
+    .message.own{background:#e3f2fd;border-left-color:#1e3c72;margin-left:20%;}
+    .message-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.9rem;}
+    .encryption-badge{background:#28a745;color:#fff;padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600;}
+    .input-area{background:#fff;border-radius:15px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.1);}
+    .input-group{display:flex;gap:10px;margin-bottom:15px;}
+    .input-group input{flex:1;padding:15px;border:2px solid #e9ecef;border-radius:10px;font-size:1rem;}
+    .decrypt-area{background:#f8f9fa;border-radius:10px;padding:15px;}
+    .success-message{background:#d4edda;color:#155724;padding:15px;border-radius:8px;margin-bottom:15px;border:1px solid #c3e6cb;}
+    .error-message{background:#f8d7da;color:#721c24;padding:15px;border-radius:8px;margin-bottom:15px;border:1px solid #f5c6cb;}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="container">
+      <!-- Setup Screen -->
+      <div id="setupScreen">
+        <div class="header">
+          <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo" onerror="this.style.display='none';">
+            <img src="/keyforge.svg" alt="Keyforge" style="height:120px;margin-left:8px;" onerror="this.innerHTML='<h1 style=\'margin:0;color:#1e3c72;\'>Keyforge</h1>';">
+          </div>
+          <p class="subtitle">Future-proof messaging.</p>
+        </div>
+
+        <div class="info-banner">
+          <strong>Enhanced Multi-Round Layered Diffusion (EMRLD) Chain</strong><br>
+          Resilient • Layered • Quantum-Ready
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('create')"><span>Create Room</span></button>
+          <button class="tab" onclick="switchTab('join')"><span>Join Room</span></button>
+        </div>
+
+        <div class="grid">
+          <!-- Left card: create/join tabs -->
+          <div class="card">
+            <!-- CREATE TAB -->
+            <div id="createTab">
+              <h3>Start a Secure Chat</h3>
+              <div class="form-group">
+                <label for="createRoomName">Room Name</label>
+                <input type="text" id="createRoomName" placeholder="My Chat Room" maxlength="50">
+              </div>
+              <div class="form-group">
+                <label for="createPassword">Room Password</label>
+                <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6">
+              </div>
+              <div class="form-group">
+                <label for="createUserName">Your Name</label>
+                <input type="text" id="createUserName" placeholder="Your Name" maxlength="30">
+              </div>
+              <!-- Turnstile (Create) -->
+              <div class="form-group">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"></div>
+              </div>
+              <button class="btn btn-primary" onclick="createRoom()">Create Secure Room</button>
+            </div>
+
+            <!-- JOIN TAB -->
+            <div id="joinTab" class="hidden">
+              <h3>Join Existing Room</h3>
+              <div class="form-group">
+                <label for="joinRoomId">Room ID</label>
+                <input type="text" id="joinRoomId" placeholder="emerald_abc123" pattern="emerald_[a-zA-Z0-9]{8}">
+              </div>
+              <div class="form-group">
+                <label for="joinPassword">Room Password</label>
+                <input type="password" id="joinPassword" placeholder="Room password" minlength="6">
+              </div>
+              <div class="form-group">
+                <label for="joinUserName">Your Name</label>
+                <input type="text" id="joinUserName" placeholder="Your Name" maxlength="30">
+              </div>
+              <!-- Turnstile (Join) -->
+              <div class="form-group">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"></div>
+              </div>
+              <button class="btn btn-success" onclick="joinRoom()">Join Secure Chat</button>
+            </div>
+          </div>
+
+          <!-- Right card: features -->
+          <div class="card">
+            <div class="features">
+              <h3>🛡️ Keyforge Security</h3>
+              <ul>
+                <li>8-Pass AES-256-CBC multi-round encryption</li>
+                <li>2048-bit PBKDF2 key derivation (1.6M iterations)</li>
+                <li>QKD with privacy amplification</li>
+                <li>XOR masking with quantum-inspired keys</li>
+                <li>NIST PQC-aligned hybrid architecture</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="setupStatus"></div>
+      </div>
+
+      <!-- Main Chat Interface -->
+      <div id="chatScreen" class="hidden">
+        <div class="chat-header">
+          <div style="display:flex;align-items:center;">
+            <img src="/logo_ani01.svg" alt="Keyforge" class="logo" onerror="this.style.display='none';">
+            <img src="/keyforge.svg" alt="Keyforge" style="height:100px;margin-left:8px;" onerror="this.innerHTML='<h1 style=\'margin:0;color:#1e3c72;\'>Keyforge</h1>';">
+            <div style="margin-left:12px;">
+              <h1 id="roomTitle" style="font-size:1.2rem;">room title</h1>
+            </div>
+          </div>
+          <div class="badge">Live</div>
+        </div>
+
+        <div class="room-info">
+          <div class="room-details">
+            <div id="roomDetails">
+              Room ID: <span id="roomIdSpan" onclick="copyRoomId()" style="cursor:pointer;color:#1e3c72;text-decoration:underline;" title="Click to copy Room ID">emerald_demo</span> • User: Placeholder
+            </div>
+          </div>
+          <div class="status-indicator">
+            <div class="pulse"></div>
+            <span>Secured</span>
+          </div>
+        </div>
+
+        <div class="messages" id="messagesContainer">
+          <div class="message">
+            <div class="message-header">
+              <span>Welcome Bot</span>
+              <div>
+                <span class="encryption-badge">EMRLD</span>
+                <span style="color:#64748b;font-weight:normal;margin-left:8px;">
+                  <script>document.write(new Date().toLocaleTimeString())</script>
+                </span>
+              </div>
+            </div>
+            <div class="message-content">
+              Welcome to Keyforge! Your messages are protected by the EMRLD Chain hybrid encryption framework.
+              Each message undergoes 8-pass AES-256-CBC encryption with simulated QKD key masking for quantum resistance.
+            </div>
+          </div>
+        </div>
+
+        <div class="input-area">
+          <div class="input-group">
+            <input type="text" id="messageInput" placeholder="Type a secure message..." maxlength="1000"
+                   onkeypress="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}" autocomplete="off">
+            <button class="btn btn-success" onclick="sendMessage()" title="Send Message">Send</button>
+            <button class="btn btn-secondary" onclick="refreshMessages()" title="Refresh Messages">Refresh</button>
+          </div>
+          <div class="decrypt-area">
+            <strong>EMRLD Chain</strong>
+            <p>Only authorized participants can access plaintext content.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // App state
+    let currentRoom=null,currentUser=null,messagePolling=null,isLoading=false;
+    let renderedIds=new Set(),polling=null,messageCache=new Map(),lastMessageId=null,optimisticMessages=new Map();
+
+    function initializeApp(){
+      document.querySelectorAll('button').forEach(btn=>{
+        btn.addEventListener('click',function(){
+          if(!this.disabled){this.classList.add('loading');setTimeout(()=>this.classList.remove('loading'),1000);}
+        });
+      });
+    }
+
+    function switchTab(tab){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.tab')[tab==='create'?0:1].classList.add('active');
+      document.getElementById('createTab').classList.toggle('hidden',tab!=='create');
+      document.getElementById('joinTab').classList.toggle('hidden',tab!=='join');
+    }
+
+    // Turnstile helpers
+    function getTurnstileToken(tabSelector){
+      const el=document.querySelector(`${tabSelector} .cf-turnstile`);
+      return (window.turnstile&&el)?window.turnstile.getResponse(el):'';
+    }
+    function resetTurnstile(tabSelector){
+      const el=document.querySelector(`${tabSelector} .cf-turnstile`);
+      if(window.turnstile&&el) window.turnstile.reset(el);
+    }
+
+    // Create Room
+    async function createRoom(){
+      if(isLoading) return; isLoading=true;
+      const roomName=document.getElementById('createRoomName').value.trim();
+      const password=document.getElementById('createPassword').value;
+      const userName=document.getElementById('createUserName').value.trim();
+
+      if(!roomName||!password||!userName){showStatus('Please fill in all fields','error');isLoading=false;return;}
+      if(password.length<6){showStatus('Password must be at least 6 characters for security','error');isLoading=false;return;}
+
+      const tsToken=getTurnstileToken('#createTab');
+      if(!tsToken){showStatus('Please complete the Turnstile check','error');isLoading=false;return;}
+
+      try{
+        const createRes=await fetch('/api/room/create',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({roomName,password,turnstile:tsToken})});
+        const createJson=await createRes.json();
+        if(!createJson.success){showStatus(`Failed to create room: ${createJson.error}`,'error');return;}
+
+        const roomId=createJson.roomId;
+        document.getElementById('joinRoomId').value=roomId;
+
+        const joinRes=await fetch('/api/room/join',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({roomId,password,turnstile:tsToken})});
+        const joinJson=await joinRes.json();
+        if(!joinJson.success){showStatus(`Created but could not join: ${joinJson.error}`,'error');return;}
+
+        currentRoom={id:roomId,name:joinJson.room.name||roomName,password};
+        currentUser=userName;
+        enterChat();
+        showStatus(`Your secure chat room has been created. Share this Room ID and password to invite others.: ${roomId}`,'success');
+      }catch(e){
+        showStatus(`Network error: ${e.message}`,'error');
+      }finally{
+        resetTurnstile('#createTab'); isLoading=false;
+      }
+    }
+
+    // Join Room
+    async function joinRoom(){
+      if(isLoading) return; isLoading=true;
+      const roomId=document.getElementById('joinRoomId').value.trim();
+      const password=document.getElementById('joinPassword').value;
+      const userName=document.getElementById('joinUserName').value.trim();
+
+      const tsToken=getTurnstileToken('#joinTab');
+      if(!tsToken){showStatus('Please complete the Turnstile check','error');isLoading=false;return;}
+
+      if(!roomId||!password||!userName){showStatus('All fields are required','error');isLoading=false;return;}
+      if(!roomId.startsWith('emerald_')){showStatus('Invalid room ID format. Should start with "emerald_"','error');isLoading=false;return;}
+
+      try{
+        const response=await fetch('/api/room/join',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({roomId,password,turnstile:tsToken})});
+        const result=await response.json();
+
+        if(result.success){
+          currentRoom={id:roomId,name:result.room.name,password};
+          currentUser=userName; enterChat(); showStatus('Welcome to Keyforge!','success');
+        }else{
+          showStatus(`Access denied: ${result.error}`,'error');
+        }
+      }catch(err){
+        showStatus(`Connection error: ${err.message}`,'error');
+      }finally{
+        resetTurnstile('#joinTab'); isLoading=false;
+      }
+    }
+
+    // Chat helpers
+    function enterChat(){
+      try{renderedIds.clear();messageCache.clear();optimisticMessages.clear();}catch{}
+      if(polling){clearInterval(polling);polling=null;}
+      if(messagePolling){clearInterval(messagePolling);messagePolling=null;}
+      lastMessageId=null;
+
+      document.getElementById('setupScreen').classList.add('hidden');
+      document.getElementById('chatScreen').classList.remove('hidden');
+
+      document.getElementById('roomTitle').textContent=currentRoom.name||'Room';
+      document.getElementById('roomDetails').innerHTML=`Room: <span id="roomIdSpan" onclick="copyRoomId()" style="cursor:pointer;color:#1e3c72;text-decoration:underline;" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Invite with Room ID and password`;
+
+      const box=document.getElementById('messagesContainer'); box.innerHTML='';
+      loadMessages(); polling=setInterval(loadMessages,3000);
+    }
+
+    async function copyRoomId(){
+      if(!currentRoom) return;
+      try{
+        await navigator.clipboard.writeText(currentRoom.id);
+        const el=document.getElementById('roomIdSpan'); const t=el.textContent;
+        el.textContent='Copied!'; el.style.color='#28a745';
+        setTimeout(()=>{el.textContent=t; el.style.color='#1e3c72';},1000);
+      }catch{
+        const area=document.createElement('textarea'); area.value=currentRoom.id;
+        document.body.appendChild(area); area.select(); document.execCommand('copy'); document.body.removeChild(area);
+      }
+    }
+
+    async function sendMessage(){
+      const txt=document.getElementById('messageInput').value.trim();
+      if(!txt||isLoading) return; isLoading=true;
+      const input=document.getElementById('messageInput'); const original=input.value;
+      input.value=''; input.disabled=true;
+
+      const optimisticId=`${Date.now()}-${currentUser}-optimistic`;
+      const container=document.getElementById('messagesContainer');
+      const div=document.createElement('div');
+      div.className='message own optimistic-message'; div.dataset.msgId=optimisticId; div.style.opacity='.7';
+      div.innerHTML=`<div class="message-header"><span>${escapeHtml(currentUser)}</span><div><span class="encryption-badge" style="background:#f59e0b;">SENDING</span><span style="color:#64748b;font-weight:normal;margin-left:8px;">${new Date().toLocaleTimeString()}</span></div></div><div class="message-content">${escapeHtml(txt)}</div>`;
+      container.appendChild(div); container.scrollTop=container.scrollHeight; optimisticMessages.set(optimisticId,div);
+
+      try{
+        const res=await fetch('/api/message/send',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({roomId:currentRoom.id,message:txt,senderName:currentUser})});
+        const json=await res.json();
+        if(json.success){
+          div.style.opacity='1'; div.querySelector('.encryption-badge').textContent='EMRLD';
+          div.querySelector('.encryption-badge').style.background='#10b981';
+          setTimeout(()=>loadMessages(),500);
+        }else{
+          div.remove(); optimisticMessages.delete(optimisticId); input.value=original; alert(`Failed to send: ${json.error}`);
+        }
+      }catch(e){
+        div.remove(); optimisticMessages.delete(optimisticId); input.value=original; alert(`Network error: ${e.message}`);
+      }finally{
+        input.disabled=false; isLoading=false;
+      }
+    }
+
+    async function loadMessages(retries=3){
+      if(!currentRoom) return;
+      try{
+        const controller=new AbortController(); const timeout=setTimeout(()=>controller.abort(),10000);
+        const response=await fetch(`/api/room/${currentRoom.id}/messages`,{signal:controller.signal}); clearTimeout(timeout);
+        if(!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const result=await response.json();
+        if(result.success){await displayMessagesIncremental(result.messages); updateConnectionStatus(true);}
+        else throw new Error(result.error||'Unknown server error');
+      }catch(e){
+        console.error('Failed to load messages:',e); updateConnectionStatus(false);
+        if(retries>0&&(e.name==='AbortError'||e.message.includes('fetch'))){const d=Math.pow(2,3-retries)*1000; setTimeout(()=>loadMessages(retries-1),d);}
+      }
+    }
+
+    function updateConnectionStatus(ok){
+      const s=document.querySelector('.status-indicator span'); if(!s) return;
+      if(ok){s.textContent='E2E'; s.style.color='#10b981';} else {s.textContent='⚠️ Reconnecting...'; s.style.color='#f59e0b';}
+    }
+
+    async function displayMessagesIncremental(messages){
+      const container=document.getElementById('messagesContainer');
+      const getContentId=(m,txt=null)=>{const win=Math.floor(m.timestamp/5000)*5000; return `${m.sender}-${txt||'encrypted'}-${win}`;};
+      const newOnes=[];
+      for(const m of messages){
+        try{
+          const dec=await decryptMessage(m.encryptedData,m.keyData,currentRoom.id);
+          const id=getContentId(m,dec.success?dec.message:null);
+          if(!renderedIds.has(id)){renderedIds.add(id); newOnes.push({...m,contentId:id,decrypted:dec});}
+        }catch{
+          const id=`${m.timestamp}-${m.sender}-${m.encryptedData.substring(0,20)}`;
+          if(!renderedIds.has(id)){renderedIds.add(id); newOnes.push({...m,contentId:id,decrypted:{success:false}});}
+        }
+      }
+      for(const m of newOnes){
+        const rm=[];
+        for(const [oid,el] of optimisticMessages.entries()){
+          const oc=el.querySelector('.message-content')?.textContent;
+          const rc=m.decrypted.success?m.decrypted.message:null;
+          if(oc&&rc&&oc.trim()===rc.trim()&&el.querySelector('.message-header span')?.textContent===m.sender){rm.push(oid); el.remove();}
+        }
+        rm.forEach(id=>optimisticMessages.delete(id));
+      }
+      for(const m of newOnes){await renderSingleMessage(m,container,m.decrypted);}
+      const nearBottom=container.scrollTop+container.clientHeight>=container.scrollHeight-50;
+      if(nearBottom&&newOnes.length>0) container.scrollTop=container.scrollHeight;
+    }
+
+    async function renderSingleMessage(m,container,pre=null){
+      const div=document.createElement('div');
+      div.className=`message ${m.sender===currentUser?'own':''}`; div.dataset.msgId=m.contentId||`${m.timestamp}-${m.sender}`;
+      const dec=pre||await decryptMessage(m.encryptedData,m.keyData,currentRoom.id);
+      if(dec.success){
+        div.innerHTML=`<div class="message-header"><span>${escapeHtml(m.sender)}</span><div><span class="encryption-badge">EMRLD</span><span style="color:#64748b;font-weight:normal;margin-left:8px;">${new Date(m.timestamp).toLocaleTimeString()}</span></div></div><div class="message-content">${escapeHtml(dec.message)}</div>`;
+      }else{
+        div.className+=' message-encrypted';
+        div.innerHTML=`<div class="message-header"><span>${escapeHtml(m.sender)}</span><div><span style="background:#dc2626;color:#fff;font-size:10px;padding:4px 8px;border-radius:6px;">ENCRYPTED</span><span style="color:#991b1b;font-weight:normal;margin-left:8px;">${new Date(m.timestamp).toLocaleTimeString()}</span></div></div><div class="message-content">🔒 ${m.encryptedData.substring(0,100)}...</div>`;
+      }
+      container.appendChild(div);
+    }
+
+    function refreshMessages(){loadMessages();}
+
+    function escapeHtml(t){const d=document.createElement('div'); d.textContent=t; return d.innerHTML;}
+
+    // Crypto utils (client-side)
+    async function decryptMessage(edB64,kdB64,context='default'){
+      try{
+        const ed=base64ToArrayBuffer(edB64); const qk=base64ToArrayBuffer(kdB64);
+        const aesData=xorWithKey(new Uint8Array(ed),new Uint8Array(qk));
+        let data=aesData; const rounds=3;
+        for(let i=rounds-1;i>=0;i--){
+          const roundKey=await deriveKey(context+i,`round-${i}`);
+          const iv=data.slice(0,12); const enc=data.slice(12);
+          const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv},roundKey,enc);
+          data=new Uint8Array(dec);
+        }
+        const msg=new TextDecoder().decode(data); return {success:true,message:msg};
+      }catch(e){return {success:false,error:e.message};}
+    }
+
+    async function deriveKey(password,salt){
+      const keyMaterial=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
+      return crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:10000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+    }
+    function xorWithKey(data,key){const r=new Uint8Array(data.length); for(let i=0;i<data.length;i++) r[i]=data[i]^key[i%key.length]; return r;}
+    function base64ToArrayBuffer(b64){const bin=atob(b64); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i); return bytes.buffer;}
+
+    document.addEventListener('DOMContentLoaded',initializeApp);
+    window.addEventListener('beforeunload',()=>{if(messagePolling) clearInterval(messagePolling);});
+  </script>
+
+  <!-- Cloudflare Turnstile loader -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</body>
+</html>
