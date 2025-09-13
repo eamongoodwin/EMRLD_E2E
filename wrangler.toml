@@ -1,16 +1,19 @@
 name = "emrld-e2e-clean"
 main = "worker.js"
-compatibility_date = "2025-09-13"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2024-09-19"
 
-[site]
-bucket = "."
+# Use modern Static Assets instead of Workers Sites
+[assets]
+directory = "./public"  # or wherever your static files are
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+# Your existing bindings
+[[kv_namespaces]]
+binding = "MESSENGER_KV"
+id = "4bddea28267a4ae4b4ad2c6303362d95"
 
 [vars]
 APP_NAME = "E2E Encrypted Messenger"
 MAX_ROOM_MESSAGES = "100"
 MESSAGE_POLL_INTERVAL = "3000"
-
-[[kv_namespaces]]
-binding = "MESSENGER_KV"
-id = "4bddea28267a4ae4b4ad2c6303362d95"
