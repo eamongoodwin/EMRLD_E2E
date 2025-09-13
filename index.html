@@ -364,8 +364,37 @@
 <body>
     <div class="app">
         <div class="container">
+            <!-- Initial Verification Screen -->
+            <div id="verificationScreen">
+                <div class="header">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo" onerror="this.style.display='none';">
+                        <img src="/keyforge.svg" alt="Keyforge" style="height: 120px; margin-left: 8px;" onerror="this.innerHTML='<h1 style=\'margin:0;color:#1e3c72;\'>Keyforge</h1>';">
+                    </div>
+                    <p class="subtitle">Secure Access Verification</p>
+                </div>
+
+                <div class="card" style="max-width: 400px; margin: 0 auto;">
+                    <h3 style="text-align: center; margin-bottom: 20px;">🛡️ Security Check</h3>
+                    <p style="text-align: center; color: #666; margin-bottom: 25px;">
+                        Please complete the security verification to access Keyforge secure messaging.
+                    </p>
+
+                    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                        <div class="cf-turnstile"
+                             data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
+                             data-theme="auto"
+                             data-callback="onInitialVerification"
+                             data-expired-callback="onInitialVerificationExpired">
+                        </div>
+                    </div>
+
+                    <div id="verificationStatus" aria-live="polite"></div>
+                </div>
+            </div>
+
             <!-- Setup Screen -->
-            <div id="setupScreen">
+            <div id="setupScreen" class="hidden">
                 <div class="header">
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
                         <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo" onerror="this.style.display='none';">
@@ -379,18 +408,20 @@
                     Resilient • Layered • Quantum-Ready
                 </div>
                 
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('create')">
+                <div class="tabs" role="tablist" aria-label="Room actions">
+                    <button class="tab active" role="tab" aria-selected="true" aria-controls="createCard"
+                            onclick="switchTab('create')">
                         <span>Create Room</span>
                     </button>
-                    <button class="tab" onclick="switchTab('join')">
+                    <button class="tab" role="tab" aria-selected="false" aria-controls="joinCard"
+                            onclick="switchTab('join')">
                         <span>Join Room</span>
                     </button>
                 </div>
                 
                 <div class="grid">
-                  <div class="card">
-                    <div id="createTab">
+                  <div class="card" id="createCard" role="tabpanel" aria-labelledby="createTab">
+                    <form id="createTab" onsubmit="event.preventDefault(); createRoom();">
                       <h3>Start a Secure Chat</h3>
                       <div class="form-group">
                         <label for="createRoomName">Room Name</label>
@@ -398,55 +429,46 @@
                       </div>
                       <div class="form-group">
                         <label for="createPassword">Room Password</label>
-                        <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6" required>
+                        <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6" autocomplete="new-password" required>
                       </div>
                       <div class="form-group">
                         <label for="createUserName">Your Name</label>
                         <input type="text" id="createUserName" placeholder="Your Name" maxlength="30" required>
                       </div>
 
-                      <!-- Cloudflare Turnstile widget -->
-                      <div class="form-group">
-                        <div class="cf-turnstile"
-                             data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
-                             data-theme="auto">
-                        </div>
-                      </div>
-
-                      <button class="btn btn-primary" onclick="createRoom()">
+                      <button id="createBtn" class="btn btn-primary" type="submit">
                         Create Secure Room
                       </button>
-                    </div>
+                    </form>
                   </div>
-                </div>
-                        
-                        <div id="joinTab" class="hidden">
-                            <h3>Join Existing Room</h3>
-                            <div class="form-group">
-                                <label for="joinRoomId">Room ID</label>
-                                <input type="text" id="joinRoomId" placeholder="emerald_abc123" pattern="emerald_[a-zA-Z0-9]{8}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="joinPassword">Room Password</label>
-                                <input type="password" id="joinPassword" placeholder="Room password" minlength="6" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="joinUserName">Your Name</label>
-                                <input type="text" id="joinUserName" placeholder="Your Name" maxlength="30" required>
-                            </div>
 
-                            <!-- Cloudflare Turnstile widget (for manual joins) -->
-                            <div class="form-group">
-                                <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"></div>
-                            </div>
+                  <!-- NEW: Join card lives in the same grid and has the same styling -->
+                  <div class="card hidden" id="joinCard" role="tabpanel" aria-labelledby="joinTab">
+                    <form id="joinTab" onsubmit="event.preventDefault(); joinRoom();">
+                      <h3>Join Existing Room</h3>
+                      <div class="form-group">
+                        <label for="joinRoomId">Room ID</label>
+                        <input type="text" id="joinRoomId" placeholder="emerald_ab12CD34"
+                               pattern="emerald_[A-Za-z0-9]{8}"
+                               title='Format: "emerald_" followed by 8 letters or numbers'
+                               required>
+                      </div>
+                      <div class="form-group">
+                        <label for="joinPassword">Room Password</label>
+                        <input type="password" id="joinPassword" placeholder="Room password" minlength="6" autocomplete="current-password" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="joinUserName">Your Name</label>
+                        <input type="text" id="joinUserName" placeholder="Your Name" maxlength="30" required>
+                      </div>
 
-                            <button class="btn btn-success" onclick="joinRoom()">
-                                Join Secure Chat
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
+                      <button id="joinBtn" class="btn btn-success" type="submit">
+                        Join Secure Chat
+                      </button>
+                    </form>
+                  </div>
+
+                  <div class="card">
                         <div class="features">
                             <h3>🛡️ Keyforge Security</h3>
                             <ul>
@@ -460,7 +482,7 @@
                     </div>
                 </div>
                 
-                <div id="setupStatus"></div>
+                <div id="setupStatus" aria-live="polite"></div>
             </div>
         
             <!-- Main Chat Interface -->
@@ -523,6 +545,9 @@
                         <button class="btn btn-secondary" onclick="refreshMessages()" title="Refresh Messages">
                             Refresh
                         </button>
+                        <button class="btn btn-secondary" onclick="shareInvite()" title="Share Invite Link">
+                            Share
+                        </button>
                     </div>
                     
                     <div class="decrypt-area">
@@ -545,11 +570,15 @@
         let messageCache = new Map();
         let lastMessageId = null;
         let optimisticMessages = new Map();
+        let isVerified = false;
 
         // Initialize application
         function initializeApp() {
             console.log('Keyforge initialized');
-            
+
+            // Show verification screen initially
+            showVerificationScreen();
+
             // Add loading states to buttons
             document.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -561,28 +590,70 @@
             });
         }
 
+        // Show verification screen
+        function showVerificationScreen() {
+            document.getElementById('verificationScreen').classList.remove('hidden');
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('chatScreen').classList.add('hidden');
+        }
+
+        // Show main interface after verification
+        function showMainInterface() {
+            document.getElementById('verificationScreen').classList.add('hidden');
+            document.getElementById('setupScreen').classList.remove('hidden');
+            document.getElementById('chatScreen').classList.add('hidden');
+            isVerified = true;
+
+            // Handle URL-based tab persistence and room prefilling
+            const qs = new URLSearchParams(location.search);
+            if (location.hash === '#join' || qs.get('tab') === 'join') {
+                switchTab('join');
+            }
+            const room = qs.get('room');
+            if (room) {
+                switchTab('join');
+                document.getElementById('joinRoomId').value = room;
+            }
+        }
+
         // Tab Management
         function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab')[tab === 'create' ? 0 : 1].classList.add('active');
+            // tab button state
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            const activeTab = tabs[tab === 'create' ? 0 : 1];
+            activeTab.classList.add('active');
+            activeTab.setAttribute('aria-selected', 'true');
 
-            document.getElementById('createTab').classList.toggle('hidden', tab !== 'create');
-            document.getElementById('joinTab').classList.toggle('hidden', tab !== 'join');
+            // show/hide whole cards so the styling stays consistent
+            const createCard = document.getElementById('createCard');
+            const joinCard   = document.getElementById('joinCard');
+            if (tab === 'create') {
+                createCard.classList.remove('hidden');
+                joinCard.classList.add('hidden');
+                document.getElementById('createRoomName')?.focus();
+            } else {
+                createCard.classList.add('hidden');
+                joinCard.classList.remove('hidden');
+                document.getElementById('joinRoomId')?.focus();
+            }
         }
 
-        // Turnstile helpers
-        function getTurnstileToken(tabSelector) {
-            const el = document.querySelector(`${tabSelector} .cf-turnstile`);
-            return (window.turnstile && el) ? window.turnstile.getResponse(el) : '';
-        }
-        function resetTurnstile(tabSelector) {
-            const el = document.querySelector(`${tabSelector} .cf-turnstile`);
-            if (window.turnstile && el) window.turnstile.reset(el);
+        // Verification guard - ensures user completed initial verification
+        function requireVerification(actionName) {
+            if (!isVerified) {
+                showStatus('Please complete the security verification first', 'error');
+                return false;
+            }
+            return true;
         }
 
         // Room Creation
         async function createRoom() {
-            if (isLoading) return;
+            if (isLoading || !requireVerification('create room')) return;
             isLoading = true;
 
             const roomName = document.getElementById('createRoomName').value.trim();
@@ -600,71 +671,66 @@
                 return;
             }
 
-            // ✅ Get Turnstile token from the Create tab
-            const tsToken = getTurnstileToken('#createTab');
-            if (!tsToken) {
-                showStatus('Please complete the Turnstile check', 'error');
-                isLoading = false; return;
-            }
 
             try {
-                // 1) Create
+                // Create room
+                console.log('Creating room...');
                 const createRes = await fetch('/api/room/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomName, password, turnstile: tsToken })
+                    body: JSON.stringify({ roomName, password })
                 });
                 const createJson = await createRes.json();
+                console.log('Create room response:', createJson);
                 if (!createJson.success) {
                     showStatus(`Failed to create room: ${createJson.error}`, 'error');
                     return;
                 }
 
                 const roomId = createJson.roomId;
+                console.log('Room created successfully:', roomId);
                 // Prefill the join box for convenience
                 document.getElementById('joinRoomId').value = roomId;
 
-                // 2) Immediately join the room we just created
+                // 3) Immediately join the room we just created
+                console.log('Auto-joining room...');
                 const joinRes = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Reuse the same token for the auto-join step
-                    body: JSON.stringify({ roomId, password, turnstile: tsToken })
+                    body: JSON.stringify({ roomId, password })
                 });
                 const joinJson = await joinRes.json();
+                console.log('Join room response:', joinJson);
                 if (!joinJson.success) {
                     showStatus(`Created but could not join: ${joinJson.error}`, 'error');
                     return;
                 }
 
-                // 3) Enter chat
+                // 4) Enter chat
+                console.log('Entering chat...');
                 currentRoom = { id: roomId, name: joinJson.room.name || roomName, password };
                 currentUser = userName;
+                console.log('Current room set:', currentRoom);
+                console.log('Current user set:', currentUser);
                 enterChat();
                 showStatus(`Your secure chat room has been created. Share this Room ID and password to invite others.: ${roomId}`, 'success');
+
             } catch (e) {
                 showStatus(`Network error: ${e.message}`, 'error');
             } finally {
-                resetTurnstile('#createTab');
                 isLoading = false;
             }
         }
 
         // Room Joining
         async function joinRoom() {
-            if (isLoading) return;
+            if (isLoading || !requireVerification('join room')) return;
             isLoading = true;
 
             const roomId = document.getElementById('joinRoomId').value.trim();
             const password = document.getElementById('joinPassword').value;
             const userName = document.getElementById('joinUserName').value.trim();
 
-            // ✅ Get Turnstile token from the Join tab
-            const tsToken = getTurnstileToken('#joinTab');
-            if (!tsToken) {
-                showStatus('Please complete the Turnstile check', 'error');
-                isLoading = false; return;
-            }
 
             // Validation
             if (!roomId || !password || !userName) {
@@ -680,10 +746,11 @@
             }
             
             try {
+                // Join room
                 const response = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomId, password, turnstile: tsToken })
+                    body: JSON.stringify({ roomId, password })
                 });
                 
                 const result = await response.json();
@@ -693,22 +760,26 @@
                     currentUser = userName;
                     enterChat();
                     showStatus('Welcome to Keyforge!', 'success');
+
                 } else {
                     showStatus(`Access denied: ${result.error}`, 'error');
                 }
             } catch (error) {
                 showStatus(`Connection error: ${error.message}`, 'error');
             } finally {
-                resetTurnstile('#joinTab');
                 isLoading = false;
             }
         }
 
         // Enter Chat Interface with proper state management
         function enterChat() {
+            console.log('enterChat() called');
+            console.log('currentRoom:', currentRoom);
+            console.log('currentUser:', currentUser);
+
             // Reset state for new room/view (security & stability)
-            try { 
-                renderedIds.clear(); 
+            try {
+                renderedIds.clear();
                 messageCache.clear();
                 optimisticMessages.clear();
             } catch {}
@@ -716,8 +787,15 @@
             if (messagePolling) { clearInterval(messagePolling); messagePolling = null; }
             lastMessageId = null;
 
-            document.getElementById('setupScreen').classList.add('hidden');
-            document.getElementById('chatScreen').classList.remove('hidden');
+            console.log('Switching screens...');
+            const setupScreen = document.getElementById('setupScreen');
+            const chatScreen = document.getElementById('chatScreen');
+            console.log('setupScreen element:', setupScreen);
+            console.log('chatScreen element:', chatScreen);
+
+            setupScreen.classList.add('hidden');
+            chatScreen.classList.remove('hidden');
+            console.log('Screen switch complete');
 
             document.getElementById('roomTitle').textContent = currentRoom.name || 'Room';
             document.getElementById('roomDetails').innerHTML =
@@ -726,31 +804,33 @@
             const box = document.getElementById('messagesContainer');
             box.innerHTML = '';
 
+            console.log('Starting message loading...');
             // Kick off fresh load + polling
             loadMessages();
             polling = setInterval(loadMessages, 3000);
+            console.log('enterChat() complete');
         }
 
         // Copy Room ID to clipboard
         async function copyRoomId() {
             if (!currentRoom) return;
-    
+
             try {
                 await navigator.clipboard.writeText(currentRoom.id);
-        
+
                 // Show visual feedback
                 const roomSpan = document.getElementById('roomIdSpan');
                 const originalText = roomSpan.textContent;
-        
+
                 roomSpan.textContent = 'Copied!';
                 roomSpan.style.color = '#28a745';
-        
+
                 // Reset after 1 second
                 setTimeout(() => {
                     roomSpan.textContent = originalText;
                     roomSpan.style.color = '#1e3c72';
                 }, 1000);
-        
+
             } catch (err) {
                 // Fallback for older browsers
                 const textArea = document.createElement('textarea');
@@ -759,15 +839,41 @@
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-        
+
                 // Show feedback
                 const roomSpan = document.getElementById('roomIdSpan');
                 const originalText = roomSpan.textContent;
                 roomSpan.textContent = 'Copied!';
-        
+
                 setTimeout(() => {
                     roomSpan.textContent = originalText;
                 }, 1000);
+            }
+        }
+
+        // Share / copy an invite link that opens the Join tab with the room prefilled
+        async function shareInvite() {
+            if (!currentRoom) { showStatus('Create or join a room first', 'error'); return; }
+            const url = new URL(location.origin + location.pathname);
+            url.searchParams.set('tab', 'join');
+            url.searchParams.set('room', currentRoom.id);
+            url.hash = 'join';
+            const link = url.toString();
+
+            try {
+                if (navigator.share) {
+                    await navigator.share({ title: 'Join my Keyforge room', url: link });
+                    return;
+                }
+                await navigator.clipboard.writeText(link);
+                showStatus('Invite link copied to clipboard', 'success');
+            } catch (_e) {
+                try {
+                    await navigator.clipboard.writeText(link);
+                    showStatus('Invite link copied to clipboard', 'success');
+                } catch {
+                    showStatus('Unable to copy invite link', 'error');
+                }
             }
         }
         
@@ -1123,6 +1229,51 @@
         });
     </script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+      // Initial verification callbacks
+      function onInitialVerification(token) {
+        console.log('Initial Turnstile verification successful');
+
+        // Verify token with backend
+        verifyInitialToken(token);
+      }
+
+      function onInitialVerificationExpired() {
+        console.log('Initial Turnstile verification expired');
+        document.getElementById('verificationStatus').innerHTML =
+          '<div class="error-message">Verification expired. Please try again.</div>';
+      }
+
+      // Verify initial token with backend
+      async function verifyInitialToken(token) {
+        try {
+          document.getElementById('verificationStatus').innerHTML =
+            '<div style="text-align: center; color: #1e3c72;">Verifying...</div>';
+
+          const response = await fetch('/api/turnstile/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ 'cf-turnstile-response': token })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById('verificationStatus').innerHTML =
+              '<div class="success-message">✓ Verification successful! Redirecting...</div>';
+
+            setTimeout(() => showMainInterface(), 1500);
+          } else {
+            document.getElementById('verificationStatus').innerHTML =
+              '<div class="error-message">Verification failed. Please try again.</div>';
+          }
+        } catch (error) {
+          console.error('Verification error:', error);
+          document.getElementById('verificationStatus').innerHTML =
+            '<div class="error-message">Connection error. Please try again.</div>';
+        }
+      }
+    </script>
 
     <noscript>
       <div class="error-message" style="margin-top:10px;">
