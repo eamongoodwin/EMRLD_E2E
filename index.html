@@ -676,7 +676,7 @@
             document.getElementById('chatScreen').classList.remove('hidden');
 
             document.getElementById('roomTitle').textContent = currentRoom.name || 'Room';
-            document.getElementById('roomDetails').textContent =
+            document.getElementById('roomDetails').innerHTML =
                 `Room id: ${currentRoom.id} • User: ${currentUser} • Invite with Room id and password`;
 
             const box = document.getElementById('messagesContainer');
