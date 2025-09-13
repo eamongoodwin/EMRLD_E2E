@@ -379,18 +379,20 @@
                     Resilient • Layered • Quantum-Ready
                 </div>
                 
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('create')">
+                <div class="tabs" role="tablist" aria-label="Room actions">
+                    <button class="tab active" role="tab" aria-selected="true" aria-controls="createCard"
+                            onclick="switchTab('create')">
                         <span>Create Room</span>
                     </button>
-                    <button class="tab" onclick="switchTab('join')">
+                    <button class="tab" role="tab" aria-selected="false" aria-controls="joinCard"
+                            onclick="switchTab('join')">
                         <span>Join Room</span>
                     </button>
                 </div>
                 
                 <div class="grid">
-                  <div class="card" id="createCard">
-                    <div id="createTab">
+                  <div class="card" id="createCard" role="tabpanel" aria-labelledby="createTab">
+                    <form id="createTab" onsubmit="event.preventDefault(); createRoom();">
                       <h3>Start a Secure Chat</h3>
                       <div class="form-group">
                         <label for="createRoomName">Room Name</label>
@@ -402,34 +404,39 @@
                       </div>
                       <div class="form-group">
                         <label for="createUserName">Your Name</label>
-                        <input type="text" id="createUserName" placeholder="Forgemaster" maxlength="30" required>
+                        <input type="text" id="createUserName" placeholder="Your Name" maxlength="30" required>
                       </div>
 
                       <!-- Cloudflare Turnstile widget -->
                       <div class="form-group">
                         <div class="cf-turnstile"
                              data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
-                             data-theme="auto">
+                             data-theme="auto"
+                             data-callback="onTsOKCreate"
+                             data-expired-callback="onTsExpiredCreate">
                         </div>
                       </div>
 
-                      <button class="btn btn-primary" onclick="createRoom()">
+                      <button id="createBtn" class="btn btn-primary" type="submit" disabled>
                         Create Secure Room
                       </button>
-                    </div>
+                    </form>
                   </div>
 
                   <!-- NEW: Join card lives in the same grid and has the same styling -->
-                  <div class="card hidden" id="joinCard">
-                    <div id="joinTab">
+                  <div class="card hidden" id="joinCard" role="tabpanel" aria-labelledby="joinTab">
+                    <form id="joinTab" onsubmit="event.preventDefault(); joinRoom();">
                       <h3>Join Existing Room</h3>
                       <div class="form-group">
                         <label for="joinRoomId">Room ID</label>
-                        <input type="text" id="joinRoomId" placeholder="emerald_ab12CD34" pattern="emerald_[a-zA-Z0-9]{8}" required>
+                        <input type="text" id="joinRoomId" placeholder="emerald_ab12CD34"
+                               pattern="emerald_[A-Za-z0-9]{8}"
+                               title='Format: "emerald_" followed by 8 letters or numbers'
+                               required>
                       </div>
                       <div class="form-group">
                         <label for="joinPassword">Room Password</label>
-                        <input type="password" id="joinPassword" placeholder="Room Password" minlength="6" autocomplete="current-password" required>
+                        <input type="password" id="joinPassword" placeholder="Room password" minlength="6" autocomplete="current-password" required>
                       </div>
                       <div class="form-group">
                         <label for="joinUserName">Your Name</label>
@@ -438,13 +445,14 @@
 
                       <!-- Cloudflare Turnstile widget (for manual joins) -->
                       <div class="form-group">
-                        <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"></div>
+                        <div class="cf-turnstile" data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd" data-theme="auto"
+                             data-callback="onTsOKJoin" data-expired-callback="onTsExpiredJoin"></div>
                       </div>
 
-                      <button class="btn btn-success" onclick="joinRoom()">
+                      <button id="joinBtn" class="btn btn-success" type="submit" disabled>
                         Join Secure Chat
                       </button>
-                    </div>
+                    </form>
                   </div>
 
                   <div class="card">
@@ -550,7 +558,7 @@
         // Initialize application
         function initializeApp() {
             console.log('Keyforge initialized');
-            
+
             // Add loading states to buttons
             document.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -560,13 +568,30 @@
                     }
                 });
             });
+
+            // Handle URL-based tab persistence and room prefilling
+            const qs = new URLSearchParams(location.search);
+            if (location.hash === '#join' || qs.get('tab') === 'join') {
+                switchTab('join');
+            }
+            const room = qs.get('room');
+            if (room) {
+                switchTab('join');
+                document.getElementById('joinRoomId').value = room;
+            }
         }
 
         // Tab Management
         function switchTab(tab) {
             // tab button state
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab')[tab === 'create' ? 0 : 1].classList.add('active');
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            const activeTab = tabs[tab === 'create' ? 0 : 1];
+            activeTab.classList.add('active');
+            activeTab.setAttribute('aria-selected', 'true');
 
             // show/hide whole cards so the styling stays consistent
             const createCard = document.getElementById('createCard');
@@ -1167,6 +1192,12 @@
         });
     </script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+      function onTsOKCreate(){ document.getElementById('createBtn').disabled = false; }
+      function onTsExpiredCreate(){ document.getElementById('createBtn').disabled = true; }
+      function onTsOKJoin(){ document.getElementById('joinBtn').disabled = false; }
+      function onTsExpiredJoin(){ document.getElementById('joinBtn').disabled = true; }
+    </script>
 
     <noscript>
       <div class="error-message" style="margin-top:10px;">
