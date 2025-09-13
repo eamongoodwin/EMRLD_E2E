@@ -381,7 +381,8 @@
                     </p>
 
                     <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                        <div class="cf-turnstile"
+                        <div id="turnstile-widget"
+                             class="cf-turnstile"
                              data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
                              data-theme="auto"
                              data-callback="onInitialVerification"
@@ -685,12 +686,22 @@
 
 
             try {
+                // Get fresh Turnstile token
+                console.log('Getting fresh Turnstile token for room creation...');
+                const token = window.turnstile ? window.turnstile.getResponse('turnstile-widget') : null;
+
+                if (!token) {
+                    showStatus('Security check failed – please refresh the page and retry verification.', 'error');
+                    isLoading = false;
+                    return;
+                }
+
                 // Create room
-                console.log('Creating room...');
+                console.log('Creating room with fresh token...');
                 const createRes = await fetch('/api/room/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomName, password, token: savedTurnstileToken })
+                    body: JSON.stringify({ roomName, password, token })
                 });
                 const createJson = await createRes.json();
                 console.log('Create room response:', createJson);
@@ -705,11 +716,12 @@
                 document.getElementById('joinRoomId').value = roomId;
 
                 // 3) Immediately join the room we just created
+                // Note: We can reuse the same token since Turnstile allows one verification per widget per session
                 console.log('Auto-joining room...');
                 const joinRes = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomId, password, token: savedTurnstileToken })
+                    body: JSON.stringify({ roomId, password, token })
                 });
                 const joinJson = await joinRes.json();
                 console.log('Join room response:', joinJson);
@@ -758,11 +770,22 @@
             }
             
             try {
+                // Get fresh Turnstile token
+                console.log('Getting fresh Turnstile token for room join...');
+                const token = window.turnstile ? window.turnstile.getResponse('turnstile-widget') : null;
+
+                if (!token) {
+                    showStatus('Security check failed – please refresh the page and retry verification.', 'error');
+                    isLoading = false;
+                    return;
+                }
+
                 // Join room
+                console.log('Joining room with fresh token...');
                 const response = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomId, password, token: savedTurnstileToken })
+                    body: JSON.stringify({ roomId, password, token })
                 });
                 
                 const result = await response.json();
