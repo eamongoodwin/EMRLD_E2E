@@ -54,24 +54,28 @@ export default {
         }
 
         if (url.pathname === '/api/room/create' && request.method === 'POST') {
-          const { roomName, password, turnstile } = await request.json();
+          const { roomName, password, token } = await request.json();
 
-          // ✅ Require Turnstile
-          const ip = request.headers.get('CF-Connecting-IP');
-          const ok = await verifyTurnstile(env, turnstile, ip);
-          if (!ok) return json({ success: false, error: 'Turnstile verification failed' }, cors, 403);
+          // Verify Turnstile token
+          const ip = request.headers.get('CF-Connecting-IP') || '';
+          const ok = await verifyTurnstile(env, token, ip);
+          if (!ok) {
+            return json({ success: false, error: 'Turnstile verification failed' }, cors, 403);
+          }
 
           const roomId = await createRoom(env.MESSENGER_KV, roomName, password);
           return json({ success: true, roomId, roomName }, cors);
         }
 
         if (url.pathname === '/api/room/join' && request.method === 'POST') {
-          const { roomId, password, turnstile } = await request.json();
+          const { roomId, password, token } = await request.json();
 
-          // ✅ Require Turnstile (for join too if you add a widget there)
-          const ip = request.headers.get('CF-Connecting-IP');
-          const ok = await verifyTurnstile(env, turnstile, ip);
-          if (!ok) return json({ success: false, error: 'Turnstile verification failed' }, cors, 403);
+          // Verify Turnstile token
+          const ip = request.headers.get('CF-Connecting-IP') || '';
+          const ok = await verifyTurnstile(env, token, ip);
+          if (!ok) {
+            return json({ success: false, error: 'Turnstile verification failed' }, cors, 403);
+          }
 
           const room = await joinRoom(env.MESSENGER_KV, roomId, password);
           return json({ success: true, room }, cors);
