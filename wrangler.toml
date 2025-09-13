@@ -1,11 +1,10 @@
-name = "emrld-e2e-messenger"
+name = "emrld-e2e-messenger" 
 main = "worker.js"
 compatibility_date = "2025-09-13"
 compatibility_flags = ["nodejs_compat"]
 
 [site]
-# Folder that contains index.html, styles.css, etc.
-bucket = "EMRLD_E2E"
+bucket = "."
 
 [vars]
 APP_NAME = "E2E Encrypted Messenger"
@@ -15,6 +14,3 @@ MESSAGE_POLL_INTERVAL = "3000"
 [[kv_namespaces]]
 binding = "MESSENGER_KV"
 id = "6fa113bfaaeb478d55cc45d5699cc272"
-# Updated config
-# Updated config
-# Updated config
