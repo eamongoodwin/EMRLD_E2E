@@ -389,25 +389,36 @@
                 </div>
                 
                 <div class="grid">
-                    <div class="card">
-                        <div id="createTab">
-                            <h3>Start a Secure Chat</h3>
-                            <div class="form-group">
-                                <label for="createRoomName">Room Name</label>
-                                <input type="text" id="createRoomName" placeholder="My Chat Room" maxlength="50">
-                            </div>
-                            <div class="form-group">
-                                <label for="createPassword">Room Password</label>
-                                <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6">
-                            </div>
-                            <div class="form-group">
-                                <label for="createUserName">Your Name</label>
-                                <input type="text" id="createUserName" placeholder="Your Name" maxlength="30">
-                            </div>
-                            <button class="btn btn-primary" onclick="createRoom()">
-                                Create Secure Room
-                            </button>
+                  <div class="card">
+                    <div id="createTab">
+                      <h3>Start a Secure Chat</h3>
+                      <div class="form-group">
+                        <label for="createRoomName">Room Name</label>
+                        <input type="text" id="createRoomName" placeholder="My Chat Room" maxlength="50">
+                      </div>
+                      <div class="form-group">
+                        <label for="createPassword">Room Password</label>
+                        <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6">
+                      </div>
+                      <div class="form-group">
+                        <label for="createUserName">Your Name</label>
+                        <input type="text" id="createUserName" placeholder="Your Name" maxlength="30">
+                      </div>
+
+                      <!-- Cloudflare Turnstile widget -->
+                      <div class="form-group">
+                        <div class="cf-turnstile"
+                             data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
+                             data-theme="auto">
                         </div>
+                      </div>
+
+                      <button class="btn btn-primary" onclick="createRoom()">
+                        Create Secure Room
+                      </button>
+                    </div>
+                  </div>
+                </div>
                         
                         <div id="joinTab" class="hidden">
                             <h3>Join Existing Room</h3>
@@ -1078,5 +1089,6 @@
             }
         });
     </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </body>
 </html>
