@@ -1244,49 +1244,24 @@
     <script>
       // Initial verification callbacks
       function onInitialVerification(token) {
-        console.log('Initial Turnstile verification successful');
+        console.log('Initial Turnstile verification successful, saving token for room operations');
 
-        // Verify token with backend
-        verifyInitialToken(token);
+        // Save token for room operations (don't verify it yet - save for actual use)
+        savedTurnstileToken = token;
+        isVerified = true;
+
+        document.getElementById('verificationStatus').innerHTML =
+          '<div class="success-message">✓ Verification successful! Redirecting...</div>';
+
+        setTimeout(() => showMainInterface(), 1500);
       }
 
       function onInitialVerificationExpired() {
         console.log('Initial Turnstile verification expired');
+        savedTurnstileToken = null;
+        isVerified = false;
         document.getElementById('verificationStatus').innerHTML =
           '<div class="error-message">Verification expired. Please try again.</div>';
-      }
-
-      // Verify initial token with backend
-      async function verifyInitialToken(token) {
-        try {
-          document.getElementById('verificationStatus').innerHTML =
-            '<div style="text-align: center; color: #1e3c72;">Verifying...</div>';
-
-          const response = await fetch('/api/turnstile/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ 'cf-turnstile-response': token })
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            document.getElementById('verificationStatus').innerHTML =
-              '<div class="success-message">✓ Verification successful! Redirecting...</div>';
-
-            console.log('Initial verification successful, saving token and setting isVerified = true');
-            savedTurnstileToken = token; // Save the token for room operations
-            isVerified = true;
-            setTimeout(() => showMainInterface(), 1500);
-          } else {
-            document.getElementById('verificationStatus').innerHTML =
-              '<div class="error-message">Verification failed. Please try again.</div>';
-          }
-        } catch (error) {
-          console.error('Verification error:', error);
-          document.getElementById('verificationStatus').innerHTML =
-            '<div class="error-message">Connection error. Please try again.</div>';
-        }
       }
     </script>
 
