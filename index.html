@@ -564,7 +564,7 @@
             const userName = document.getElementById('createUserName').value.trim();
 
             if (!roomName || !password || !userName) {
-                showStatus('Invalid room ID. Room IDs begin with emerald_', 'error');
+                showStatus('Please fill in all fields', 'error');
                 isLoading = false;
                 return;
             }
