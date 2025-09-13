@@ -391,7 +391,6 @@
                     </div>
 
                     <!-- Invisible turnstile widget for token minting -->
-                    <div id="ts-invisible"></div>
 
                     <div id="verificationStatus" aria-live="polite"></div>
                 </div>
@@ -697,11 +696,11 @@
         // Mint fresh token using invisible widget with callback
         async function mintToken(action = '') {
             const id = await ensureInvisibleWidget();
-            console.log(`Getting fresh Turnstile token for ${action}...`);
+            turnstile.reset(id);
             return new Promise((resolve) => {
                 turnstile.execute(id, {
                     action,
-                    callback: (t) => { console.log('Retrieved token:', t.slice(0, 20) + '…'); resolve(t); },
+                    callback: (tok) => { console.log('Retrieved token:', tok.slice(0, 20) + '…'); resolve(tok); },
                     'error-callback': (e) => { console.error('Turnstile error:', e); resolve(null); },
                     timeout: 10000
                 });
@@ -743,7 +742,10 @@
                 console.log('Creating room with fresh token...');
                 const createRes = await fetch('/api/room/create', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cf-turnstile-response': token
+                    },
                     body: JSON.stringify({
                         roomName,
                         password,
@@ -768,7 +770,10 @@
                 console.log('Auto-joining room...');
                 const joinRes = await fetch('/api/room/join', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cf-turnstile-response': token
+                    },
                     body: JSON.stringify({
                         roomId,
                         password,
@@ -836,7 +841,10 @@
                 console.log('Joining room with fresh token...');
                 const response = await fetch('/api/room/join', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cf-turnstile-response': token
+                    },
                     body: JSON.stringify({
                         roomId,
                         password,
@@ -1017,7 +1025,10 @@
             try {
                 const response = await fetch('/api/message/send', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cf-turnstile-response': token
+                    },
                     body: JSON.stringify({
                         roomId: currentRoom.id,
                         message: messageText,
@@ -1340,7 +1351,7 @@
         savedTurnstileToken = null;
         isVerified = false;
         document.getElementById('verificationStatus').innerHTML =
-          '<div class="error-message">Verification expired. Please try again.</div>';\n        \n        // Reset the visible widget\n        const el = document.getElementById('turnstile-widget');\n        if (window.turnstile && el) {\n          // If auto-rendered, Turnstile will find and reset that widget instance\n          turnstile.reset();\n        }
+          '<div class="error-message">Verification expired. Please try again.</div>';\n\n        // Reset the visible widget\n        const el = document.getElementById('turnstile-widget');\n        if (window.turnstile && el) {\n          turnstile.reset();\n        }
       }
     </script>
 
@@ -1349,5 +1360,5 @@
         JavaScript is required to run Turnstile and use this app.
       </div>
     </noscript>
-</body>
+    <!-- Invisible turnstile widget for token minting (outside hidden containers) -->\n    <div id=\"ts-invisible\" style=\"position:absolute;left:-9999px;top:-9999px;\"></div>\n</body>
 </html>
