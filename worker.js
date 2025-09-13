@@ -21,6 +21,38 @@ export default {
           return json({ status: 'healthy', ts: Date.now(), service: 'emerald-city' }, cors);
         }
 
+        // Turnstile verification endpoint
+        if (url.pathname === '/api/turnstile/verify' && request.method === 'POST') {
+          // Accept either form-data, urlencoded, or JSON and normalize to a token
+          const ct = request.headers.get('content-type') || '';
+          let token = '';
+          if (ct.includes('application/json')) {
+            const j = await request.json().catch(() => ({}));
+            token = j['cf-turnstile-response'] || j['token'] || '';
+          } else if (ct.includes('application/x-www-form-urlencoded')) {
+            const p = new URLSearchParams(await request.text());
+            token = p.get('cf-turnstile-response') || p.get('token') || '';
+          } else {
+            const f = await request.formData().catch(() => null);
+            token = f?.get('cf-turnstile-response') || f?.get('token') || '';
+          }
+          const ip = request.headers.get('CF-Connecting-IP') || '';
+          const verify = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            body: new URLSearchParams({
+              secret: env.TURNSTILE_SECRET,
+              response: token,
+              remoteip: ip
+            })
+          });
+          const data = await verify.json();
+          // Inspect in Logs / `wrangler tail`
+          console.log('turnstile verify', JSON.stringify(data));
+          return new Response(JSON.stringify(data), {
+            headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...cors }
+          });
+        }
+
         if (url.pathname === '/api/room/create' && request.method === 'POST') {
           const { roomName, password, turnstile } = await request.json();
 
