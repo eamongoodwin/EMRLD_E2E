@@ -576,7 +576,6 @@
         let optimisticMessages = new Map();
         let isVerified = false;
         let savedTurnstileToken = null;
-        let tsWidgetId = null;
 
         // Initialize application
         function initializeApp() {
@@ -675,74 +674,38 @@
 
         // Wait for Turnstile to load
         function waitForTurnstile() {
-            return new Promise((resolve) => {
-                if (window.turnstile) {
-                    resolve();
-                } else {
-                    const checkTurnstile = () => {
-                        if (window.turnstile) {
-                            resolve();
-                        } else {
-                            setTimeout(checkTurnstile, 100);
-                        }
-                    };
-                    checkTurnstile();
-                }
+            return new Promise(r => {
+                if (window.turnstile) return r();
+                const i = setInterval(() => { if (window.turnstile) { clearInterval(i); r(); } }, 50);
             });
         }
 
         // Ensure invisible widget is rendered
         let invisibleWidgetId = null;
         async function ensureInvisibleWidget() {
-            if (invisibleWidgetId !== null) return invisibleWidgetId;
-
             await waitForTurnstile();
-            invisibleWidgetId = window.turnstile.render('#ts-invisible', {
-                sitekey: '0x4AAAAAAAz4EglWgeorOmzQ',
-                size: 'invisible',
-                callback: function(token) {
-                    console.log('Invisible widget callback fired');
-                }
-            });
-            console.log('Invisible widget rendered with ID:', invisibleWidgetId);
+            if (!invisibleWidgetId) {
+                invisibleWidgetId = turnstile.render('#ts-invisible', {
+                    sitekey: '0x4AAAAAAAz4EglWgeorOmzQ',
+                    size: 'invisible'
+                });
+                console.log('Invisible Turnstile widget ready:', invisibleWidgetId);
+            }
             return invisibleWidgetId;
         }
 
-        // Mint fresh token using invisible widget
+        // Mint fresh token using invisible widget with callback
         async function mintToken(action = '') {
-            console.log('Minting fresh token for:', action);
-
-            try {
-                const widgetId = await ensureInvisibleWidget();
-
-                // Reset and execute
-                window.turnstile.reset(widgetId);
-                window.turnstile.execute(widgetId);
-
-                // Wait for token
-                return new Promise((resolve, reject) => {
-                    let attempts = 0;
-                    const maxAttempts = 50; // 5 seconds
-
-                    const checkToken = () => {
-                        const token = window.turnstile.getResponse(widgetId);
-                        if (token) {
-                            console.log('Fresh token minted:', token.substring(0, 20) + '...');
-                            resolve(token);
-                        } else if (attempts >= maxAttempts) {
-                            console.error('Token minting timed out');
-                            reject(new Error('Token minting timeout'));
-                        } else {
-                            attempts++;
-                            setTimeout(checkToken, 100);
-                        }
-                    };
-                    checkToken();
+            const id = await ensureInvisibleWidget();
+            console.log(`Getting fresh Turnstile token for ${action}...`);
+            return new Promise((resolve) => {
+                turnstile.execute(id, {
+                    action,
+                    callback: (t) => { console.log('Retrieved token:', t.slice(0, 20) + '…'); resolve(t); },
+                    'error-callback': (e) => { console.error('Turnstile error:', e); resolve(null); },
+                    timeout: 10000
                 });
-            } catch (error) {
-                console.error('Error minting token:', error);
-                return null;
-            }
+            });
         }
 
         // Room Creation
@@ -781,7 +744,12 @@
                 const createRes = await fetch('/api/room/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomName, password, token })
+                    body: JSON.stringify({
+                        roomName,
+                        password,
+                        token,
+                        'cf-turnstile-response': token
+                    })
                 });
                 const createJson = await createRes.json();
                 console.log('Create room response:', createJson);
@@ -801,7 +769,12 @@
                 const joinRes = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomId, password, token })
+                    body: JSON.stringify({
+                        roomId,
+                        password,
+                        token,
+                        'cf-turnstile-response': token
+                    })
                 });
                 const joinJson = await joinRes.json();
                 console.log('Join room response:', joinJson);
@@ -864,7 +837,12 @@
                 const response = await fetch('/api/room/join', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ roomId, password, token })
+                    body: JSON.stringify({
+                        roomId,
+                        password,
+                        token,
+                        'cf-turnstile-response': token
+                    })
                 });
                 
                 const result = await response.json();
@@ -1362,7 +1340,7 @@
         savedTurnstileToken = null;
         isVerified = false;
         document.getElementById('verificationStatus').innerHTML =
-          '<div class="error-message">Verification expired. Please try again.</div>';
+          '<div class="error-message">Verification expired. Please try again.</div>';\n        \n        // Reset the visible widget\n        const el = document.getElementById('turnstile-widget');\n        if (window.turnstile && el) {\n          // If auto-rendered, Turnstile will find and reset that widget instance\n          turnstile.reset();\n        }
       }
     </script>
 
