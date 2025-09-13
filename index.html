@@ -644,30 +644,22 @@
 
         // Verification guard - ensures user completed initial verification
         function requireVerification(actionName) {
-            console.log(`requireVerification called for ${actionName}, isVerified =`, isVerified);
+            console.log(`requireVerification called for ${actionName}`);
 
-            const verificationScreen = document.getElementById('verificationScreen');
             const setupScreen = document.getElementById('setupScreen');
+            const isOnSetupScreen = setupScreen && !setupScreen.classList.contains('hidden');
 
-            console.log('verificationScreen element:', verificationScreen);
-            console.log('verificationScreen hidden?', verificationScreen?.classList.contains('hidden'));
-            console.log('setupScreen element:', setupScreen);
-            console.log('setupScreen hidden?', setupScreen?.classList.contains('hidden'));
+            console.log('Setup screen visible?', isOnSetupScreen);
 
-            // If user can see the setup screen (main interface), they must be verified
-            if (setupScreen && !setupScreen.classList.contains('hidden')) {
-                console.log('User is on setup screen - they must be verified');
-                isVerified = true;
+            // Simple logic: if user can see the setup screen, they're verified
+            if (isOnSetupScreen) {
+                console.log('User passed verification - allowing action');
                 return true;
             }
 
-            if (!isVerified) {
-                console.log('User not verified and not on main interface');
-                showStatus('Please complete the security verification first', 'error');
-                return false;
-            }
-
-            return true;
+            console.log('User not on main interface - blocking action');
+            showStatus('Please complete the security verification first', 'error');
+            return false;
         }
 
         // Room Creation
