@@ -398,7 +398,7 @@
                       </div>
                       <div class="form-group">
                         <label for="createPassword">Room Password</label>
-                        <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6" required>
+                        <input type="password" id="createPassword" placeholder="Room Password (min length: 6)" minlength="6" autocomplete="new-password" required>
                       </div>
                       <div class="form-group">
                         <label for="createUserName">Your Name</label>
@@ -425,11 +425,11 @@
                       <h3>Join Existing Room</h3>
                       <div class="form-group">
                         <label for="joinRoomId">Room ID</label>
-                        <input type="text" id="joinRoomId" placeholder="emerald_abc123" pattern="emerald_[a-zA-Z0-9]{8}" required>
+                        <input type="text" id="joinRoomId" placeholder="emerald_ab12CD34" pattern="emerald_[a-zA-Z0-9]{8}" required>
                       </div>
                       <div class="form-group">
                         <label for="joinPassword">Room Password</label>
-                        <input type="password" id="joinPassword" placeholder="Room password" minlength="6" required>
+                        <input type="password" id="joinPassword" placeholder="Room password" minlength="6" autocomplete="current-password" required>
                       </div>
                       <div class="form-group">
                         <label for="joinUserName">Your Name</label>
@@ -461,7 +461,7 @@
                     </div>
                 </div>
                 
-                <div id="setupStatus"></div>
+                <div id="setupStatus" aria-live="polite"></div>
             </div>
         
             <!-- Main Chat Interface -->
@@ -574,9 +574,13 @@
             if (tab === 'create') {
                 createCard.classList.remove('hidden');
                 joinCard.classList.add('hidden');
+                resetTurnstile('#createTab');
+                document.getElementById('createRoomName')?.focus();
             } else {
                 createCard.classList.add('hidden');
                 joinCard.classList.remove('hidden');
+                resetTurnstile('#joinTab');
+                document.getElementById('joinRoomId')?.focus();
             }
         }
 
