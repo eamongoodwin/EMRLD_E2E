@@ -1531,3 +1531,24 @@ textarea {
   border-radius: var(--radius-md);
   transition: box-shadow 0.18s var(--ease-out-expo), border-color 0.18s var(--ease-out-expo);
 }
+
+/* Center align info-banner text */
+.info-banner {
+  text-align: center;
+}
+
+/* Center align features box content */
+.features {
+  text-align: center;
+}
+
+.features h3 {
+  text-align: center; /* override left heading */
+}
+
+.features ul {
+  display: inline-block; /* keeps the list centered in the box */
+  text-align: left;      /* keeps checkmark + text aligned inside */
+  margin: 0 auto;
+}
+
