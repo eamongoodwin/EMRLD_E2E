@@ -16,8 +16,8 @@
             <div id="verificationScreen">
                 <div class="header">
                     <div class="flex-center-mb">
-                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo" onerror="this.style.display='none';">
-                        <img src="/keyforge.svg" alt="Keyforge" class="img-lg" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
+                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo glow-img" onerror="this.style.display='none';">
+                        <img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
                     </div>
                     <p class="subtitle">Secure Access Verification</p>
                 </div>
@@ -41,8 +41,8 @@
             <div id="setupScreen" class="hidden">
                 <div class="header">
                     <div class="flex-center-mb">
-                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo" onerror="this.style.display='none';">
-                        <img src="/keyforge.svg" alt="Keyforge" class="img-lg" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
+                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo glow-img" onerror="this.style.display='none';">
+                        <img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
                     </div>
                     <p class="subtitle">Future-proof messaging.</p>
                 </div>
@@ -135,7 +135,7 @@
                 <div class="chat-header">
                     <div class="flex-align-center">
                         <img src="/logo_ani01.svg" alt="Keyforge" class="logo" onerror="this.style.display='none';">
-                        <img src="/keyforge.svg" alt="Keyforge" class="chat-header-logo" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
+                        <img src="/keyforge.svg" alt="Keyforge" class="chat-header-logo glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>'">
                         <div class="ml-3">
                             <h1 id="roomTitle" class="chat-room-title">room title</h1>
                         </div>
@@ -172,6 +172,36 @@
                             Each message undergoes 8-pass AES-256-CBC encryption with simulated QKD key masking for quantum resistance.
                         </div>
                     </div>
+                </div>
+
+                <!-- keep your messagesContainer exactly as you have it -->
+
+                <div class="input-area">
+                <!-- Full-width input at the top -->
+                 <div class="input-wrapper">
+                 <input
+                      type="text"
+                      id="messageInput"
+                     placeholder="Type a secure message..."
+                     maxlength="1000"
+                     onkeypress="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); }"
+                     autocomplete="off"
+                     aria-label="Type a secure message"
+                    />
+                 </div>
+
+                <!-- Buttons live together on one row -->
+                <div class="composer-actions">
+                  <button class="btn btn-success" onclick="sendMessage()" title="Send Message">Send</button>
+                  <button class="btn btn-secondary" onclick="refreshMessages()" title="Refresh Messages">Refresh</button>
+                 <button class="btn btn-secondary" onclick="shareInvite()" title="Share Invite Link">Share</button>
+                </div>
+
+                 <!-- Stays at the bottom, full width -->
+                <div class="decrypt-area">
+                  <strong>EMRLD Chain</strong>
+                  <p>All rights reserved.</p>
+                 </div>
                 </div>
                 
                 <div class="input-area">
