@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keyforge - Secure Messenger</title>
+    <title>Key-forge - Secure Messenger</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="/logo_ani01.svg" type="image/svg+xml">
     <meta name="description" content="Quantum-Grade Encryption. Secure end-to-end encrypted messaging with EMRLD Chain technology.">
@@ -17,7 +17,7 @@
                 <div class="header">
                     <div class="flex-center-mb">
                         <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo glow-img" onerror="this.style.display='none';">
-                       <!--<img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';"> --> -- removed for testing --
+                       <!--<img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';"> --> 
                     </div>
                     <p class="subtitle">Secure Access Verification</p>
                 </div>
@@ -26,7 +26,7 @@
                     <img src="/shield.svg" alt="Shield" class="img-md img-inline">
                     <h3 class="h3-center">Security Check</h3>
                     <p class="text-center text-gray mb-6">
-                        Please complete the security verification to access Keyforge secure messaging.
+                        Please complete the security verification to access Key-forge secure messaging.
                     </p>
 
                     <!-- Turnstile widget removed for testing -->
@@ -42,9 +42,9 @@
                 <div class="header">
                     <div class="flex-center-mb">
                         <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo glow-img" onerror="this.style.display='none';">
-                        <!--<img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';"> --> -- removed for testing --
+                        <!--<img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';"> --> 
                     </div>
-                    <p class="subtitle">Future-proof messaging.</p>
+                    <p class="subtitle">Quantum Secure Messaging.</p>
                 </div>
                 
                 <div class="info-banner">
@@ -115,7 +115,7 @@
                   <div class="card">
                         <div class="features">
                             <img src="/shield.svg" alt="Shield" class="img-md img-inline">
-                            <h3>Keyforge Security</h3>
+                            <h3>Key-forge Security</h3>
                             <ul>
                                 <li>8-Pass AES-256-CBC multi-round encryption</li>
                                 <li>2048-bit PBKDF2 key derivation (1.6M iterations)</li>
@@ -135,7 +135,7 @@
                 <div class="chat-header">
                     <div class="flex-align-center">
                         <img src="/logo_ani01.svg" alt="Keyforge" class="logo" onerror="this.style.display='none';">
-                      <!--  <img src="/keyforge.svg" alt="Keyforge" class="chat-header-logo glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>'"> --> -- removed for testing --
+                      <!--  <img src="/keyforge.svg" alt="Keyforge" class="chat-header-logo glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>'"> --> 
                         <div class="ml-3">
                             <h1 id="roomTitle" class="chat-room-title">room title</h1>
                         </div>
@@ -168,8 +168,8 @@
                             </div>
                         </div>
                         <div class="message-content">
-                            Welcome to Keyforge! Your messages are protected by the EMRLD Chain hybrid encryption framework. 
-                            Each message undergoes 8-pass AES-256-CBC encryption with simulated QKD key masking for quantum resistance.
+                            Welcome to Key-forge! Your messages are protected by the EMRLD Chain hybrid encryption framework. 
+                            Each message undergoes 8-pass AES-256-CBC encryption with QKD key masking.
                         </div>
                     </div>
                 </div>
@@ -460,7 +460,7 @@
                     currentRoom = { id: roomId, name: result.room.name, password };
                     currentUser = userName;
                     enterChat();
-                    showStatus('Welcome to Keyforge!', 'success');
+                    showStatus('Welcome to Key-forge!', 'success');
 
                 } else {
                     showStatus(`Access denied: ${result.error}`, 'error');
@@ -562,7 +562,7 @@
 
             try {
                 if (navigator.share) {
-                    await navigator.share({ title: 'Join my Keyforge room', url: link });
+                    await navigator.share({ title: 'Join my Key-forge room', url: link });
                     return;
                 }
                 await navigator.clipboard.writeText(link);
