@@ -203,33 +203,6 @@
                   <p>All rights reserved.</p>
                  </div>
                 </div>
-                
-                <div class="input-area">
-                    <div class="input-group">
-                        <input 
-                            type="text" 
-                            id="messageInput" 
-                            placeholder="Type a secure message..." 
-                            maxlength="1000"
-                            onkeypress="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); }"
-                            autocomplete="off"
-                        >
-                        <button class="btn btn-success" onclick="sendMessage()" title="Send Message">
-                            Send
-                        </button>
-                        <button class="btn btn-secondary" onclick="refreshMessages()" title="Refresh Messages">
-                            Refresh
-                        </button>
-                        <button class="btn btn-secondary" onclick="shareInvite()" title="Share Invite Link">
-                            Share
-                        </button>
-                    </div>
-                    
-                    <div class="decrypt-area">
-                        <strong>EMRLD Chain</strong>
-                        <p>Only authorized participants can access plaintext content.</p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
