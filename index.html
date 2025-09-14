@@ -199,9 +199,6 @@
 
                  <!-- Stays at the bottom, full width -->
                 <div class="decrypt-area">
-                  <strong>EMRLD Chain</strong>
-                  <p>All rights reserved.</p>
-                 </div>
                 </div>
             </div>
         </div>
@@ -499,7 +496,7 @@
 
             document.getElementById('roomTitle').textContent = currentRoom.name || 'Room';
             document.getElementById('roomDetails').innerHTML =
-                `Room: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Invite with Room ID and password`;
+                `Room: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Click Forge! to send invite.`;
 
             const box = document.getElementById('messagesContainer');
             box.innerHTML = '';
