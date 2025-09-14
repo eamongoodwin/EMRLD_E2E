@@ -1567,6 +1567,12 @@ textarea {
   width: 100%;
   margin: 0;          /* reset auto margins */
   max-width: none;    /* let them fully expand inside setup-form */
+
+  .setup-screen {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
 }
 
 
