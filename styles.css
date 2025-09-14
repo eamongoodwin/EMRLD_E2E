@@ -1765,3 +1765,26 @@ textarea {
 [data-theme="dark"] .features-card .features li { color: var(--slate-700); }
 [data-theme="dark"] #setupScreen input::placeholder,
 [data-theme="dark"] #setupScreen textarea::placeholder { color: var(--slate-500); }
+
+/* === Auth visibility fix === */
+#verificationScreen.hidden,
+#setupScreen.hidden,
+#chatScreen.hidden {
+  display: none;
+}
+
+/* Only show panels when NOT hidden */
+#setupScreen:not(.hidden),
+#chatScreen:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Keep layout styles on the element, not its visibility */
+#setupScreen {
+  padding: 48px;
+  text-align: center;
+  flex: 1;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
