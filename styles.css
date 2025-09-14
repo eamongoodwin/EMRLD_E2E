@@ -1494,3 +1494,10 @@ textarea {
 .room-info .room-id-clickable:hover {
   color: var(--emerald-200); /* light green on hover */
 }
+
+.input-group input[type="text"]:focus {
+  outline: none; /* remove default focus outline */
+  border-color: var(--emerald-500); /* custom focus border */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); /* optional soft glow */
+}
+
