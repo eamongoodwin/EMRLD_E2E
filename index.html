@@ -6,7 +6,7 @@
     <title>Key-forge - Secure Messenger</title>
 
     <!-- CSP Header (prefer server-side headers for HSTS, X-Content-Type-Options, etc.) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; base-uri 'none'; form-action 'self'; upgrade-insecure-requests;">
 
     <!--
     PRODUCTION: Move these to server response headers for proper enforcement:
@@ -41,12 +41,7 @@
 
                     <!-- Visible Turnstile widget for first verification -->
                     <div class="text-center mb-6">
-                        <div id="ts-visible"
-                             class="cf-turnstile"
-                             data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
-                             data-theme="auto"
-                             data-callback="onFirstVerify">S
-                        </div>
+                        <div id="ts-visible"></div>
                     </div>
 
                     <div id="verificationStatus" aria-live="polite"></div>
@@ -128,7 +123,7 @@
                     </form>
                   </div>
 
-                  <div class="card">
+                  <div class="card features-card">
                         <div class="features">
                             <img src="/shield.svg" alt="Shield" class="img-md img-inline">
                             <h3>Key-forge Security</h3>
@@ -150,9 +145,8 @@
             <div id="chatScreen" class="hidden">
                 <div class="chat-header">
                     <div class="chat-logo-container">
-                        <img src="/keyforge.svg" alt="Keyforge" class="chat-logo-text" onerror="this.style.display='none'; document.getElementById('logo-fallback-3').hidden=false;">
-                        <span id="logo-fallback-3" hidden style="color: var(--emerald-100); font-size: 1.2rem; font-weight: 600; height: 30px; display: flex; align-items: center;">Keyforge</span>
-                        <img src="/logo_ani01.svg" alt="Keyforge" class="chat-logo-icon" onerror="this.style.display='none';">
+                        <img src="/keyforge.svg" alt="Keyforge" class="chat-logo-text">
+                        <img src="/logo_ani01.svg" alt="Keyforge" class="chat-logo-icon">
                         <div class="ml-3">
                             <h1 id="roomTitle" class="chat-room-title">room title</h1>
                         </div>
@@ -222,6 +216,14 @@
     </div>
 
     <script>
+        // Development Environment Detection
+        const IS_LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+        const TS_SITEKEY = IS_LOCAL
+            ? '1x00000000000000000000AA'  // Official Turnstile test key
+            : '0x4AAAAAAB1C2uOH0-FlPCYd';  // Production key
+
+        console.log(`Environment: ${IS_LOCAL ? 'LOCAL' : 'PRODUCTION'}, Using sitekey: ${TS_SITEKEY}`);
+
         // Application State
         let currentRoom = null;
         let currentUser = null;
@@ -231,7 +233,6 @@
         let messageCache = new Map();
         let lastMessageId = null;
         let optimisticMessages = new Map();
-        let tsInvisibleWidgetId = null;
 
         // Session-scoped verification
         const VERIFIED_KEY = "turnstile:v1:verifiedAt";
@@ -242,65 +243,7 @@
             return t && (Date.now() - t) < VERIFIED_TTL_MS;
         }
 
-        // Robust TokenManager with single-flight and TTL
-        const TokenManager = (() => {
-            let cached = { token: null, exp: 0, inflight: null };
-
-            async function mint(action = 'generic') {
-                const NOW = Date.now();
-                if (cached.token && NOW < cached.exp) return cached.token;
-
-                if (cached.inflight) return cached.inflight;
-
-                cached.inflight = new Promise((resolve, reject) => {
-                    try {
-                        mountInvisibleWidget();
-                        if (!window.turnstile || !tsInvisibleWidgetId) {
-                            throw new Error('Turnstile widget not ready');
-                        }
-
-                        turnstile.execute(tsInvisibleWidgetId, { action })
-                            .then(token => {
-                                cached.token = token;
-                                cached.exp = NOW + 90 * 1000; // 90s TTL
-                                cached.inflight = null;
-                                resolve(token);
-                            })
-                            .catch(err => {
-                                cached.inflight = null;
-                                reject(err);
-                            });
-                    } catch (e) {
-                        cached.inflight = null;
-                        reject(e);
-                    }
-                });
-                return cached.inflight;
-            }
-
-            function clear() {
-                cached = { token: null, exp: 0, inflight: null };
-            }
-
-            return { mint, clear };
-        })();
-
-        // Widget management
-        function mountInvisibleWidget() {
-            if (tsInvisibleWidgetId) return;
-            if (!window.turnstile) return;
-
-            try {
-                tsInvisibleWidgetId = turnstile.render('#ts-invisible', {
-                    sitekey: '0x4AAAAAAB1C2uOH0-FlPCYd',
-                    theme: 'auto',
-                    size: 'invisible'
-                });
-                console.log('Invisible Turnstile widget mounted');
-            } catch (error) {
-                console.error('Failed to mount invisible widget:', error);
-            }
-        }
+        // Simplified: Only visible widget for initial verification
 
         // First verification callback
         window.onFirstVerify = function(token) {
@@ -309,33 +252,16 @@
             showMainInterface();
         };
 
-        // Authenticated fetch with retry logic
-        async function authedFetch(url, body, action) {
-            const token = await TokenManager.mint(action);
-            const res = await fetch(url, {
+        // Simple fetch helper
+        async function simpleFetch(url, body) {
+            console.log(`Making request to ${url}`);
+            return fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'cf-turnstile-response': token
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(body)
             });
-
-            // Auto-retry on auth failure
-            if (res.status === 401 || res.status === 403) {
-                console.log('Token expired, refreshing...');
-                TokenManager.clear();
-                const fresh = await TokenManager.mint(action);
-                return fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'cf-turnstile-response': fresh
-                    },
-                    body: JSON.stringify(body)
-                });
-            }
-            return res;
         }
 
         // CSP Violation Monitoring (development aid)
@@ -379,9 +305,6 @@
             document.getElementById('chatScreen').classList.add('hidden');
             console.log('Showing main interface');
 
-            // Mount invisible widget for later use
-            setTimeout(mountInvisibleWidget, 100);
-
             // Handle URL-based tab persistence and room prefilling
             const qs = new URLSearchParams(location.search);
             if (location.hash === '#join' || qs.get('tab') === 'join') {
@@ -420,19 +343,11 @@
             }
         }
 
-        // Verification check
-        function requireVerification(actionName) {
-            const verified = isSessionVerified();
-            if (!verified) {
-                console.log(`Action ${actionName} requires verification`);
-                showVerificationScreen();
-            }
-            return verified;
-        }
+        // Simplified: No verification required for actions after initial gate
 
         // Room Creation
         async function createRoom() {
-            if (isLoading || !requireVerification('create room')) return;
+            if (isLoading) return;
             isLoading = true;
 
             const roomName = document.getElementById('createRoomName').value.trim();
@@ -450,14 +365,13 @@
                 return;
             }
 
-
             try {
-                // Create room with authenticated fetch
-                console.log('Creating room with authentication...');
-                const createRes = await authedFetch('/api/room/create', {
+                // Create room
+                console.log('Creating room...');
+                const createRes = await simpleFetch('/api/room/create', {
                     roomName,
                     password
-                }, 'create_room');
+                });
                 const createJson = await createRes.json();
                 console.log('Create room response:', createJson);
                 if (!createJson.success) {
@@ -472,10 +386,10 @@
 
                 // Auto-join the room we just created
                 console.log('Auto-joining room...');
-                const joinRes = await authedFetch('/api/room/join', {
+                const joinRes = await simpleFetch('/api/room/join', {
                     roomId,
                     password
-                }, 'join_room');
+                });
                 const joinJson = await joinRes.json();
                 console.log('Join room response:', joinJson);
                 if (!joinJson.success) {
@@ -489,8 +403,14 @@
                 currentUser = userName;
                 console.log('Current room set:', currentRoom);
                 console.log('Current user set:', currentUser);
-                enterChat();
-                showStatus(`Your secure chat room has been created. Share this Room ID and password to invite others.: ${roomId}`, 'success');
+
+                // Show success message before switching screens
+                showStatus(`Your secure chat room has been created. Room ID: ${roomId}`, 'success');
+
+                // Small delay to let user see the success message, then switch
+                setTimeout(() => {
+                    enterChat();
+                }, 1500);
 
             } catch (e) {
                 showStatus(`Network error: ${e.message}`, 'error');
@@ -501,7 +421,7 @@
 
         // Room Joining
         async function joinRoom() {
-            if (isLoading || !requireVerification('join room')) return;
+            if (isLoading) return;
             isLoading = true;
 
             const roomId = document.getElementById('joinRoomId').value.trim();
@@ -523,12 +443,12 @@
             }
             
             try {
-                // Join room with authenticated fetch
-                console.log('Joining room with authentication...');
-                const response = await authedFetch('/api/room/join', {
+                // Join room
+                console.log('Joining room...');
+                const response = await simpleFetch('/api/room/join', {
                     roomId,
                     password
-                }, 'join_room');
+                });
                 
                 const result = await response.json();
                 
@@ -572,10 +492,12 @@
             setupScreen.classList.add('hidden');
             chatScreen.classList.remove('hidden');
             console.log('Screen switch complete');
+            console.log('Setup screen hidden?', setupScreen.classList.contains('hidden'));
+            console.log('Chat screen visible?', !chatScreen.classList.contains('hidden'));
 
             document.getElementById('roomTitle').textContent = currentRoom.name || 'Room';
             document.getElementById('roomDetails').innerHTML =
-                `Room: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Click Forge Invite to share Room.`;
+                `Room ID: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Click Forge Invite to share Room.`;
 
             const box = document.getElementById('messagesContainer');
             box.innerHTML = '';
@@ -583,6 +505,7 @@
             console.log('Starting message loading...');
             // Kick off fresh load + polling
             loadMessages();
+            // Polling interval - aligns with MESSAGE_POLL_INTERVAL in wrangler.toml
             messagePolling = setInterval(loadMessages, 3000);
             console.log('enterChat() complete');
         }
@@ -699,12 +622,12 @@
             optimisticMessages.set(optimisticId, messageDiv);
             
             try {
-                // Send message with authenticated fetch
-                const response = await authedFetch('/api/message/send', {
+                // Send message
+                const response = await simpleFetch('/api/message/send', {
                     roomId: currentRoom.id,
                     message: messageText,
                     senderName: currentUser
-                }, 'send_message');
+                });
                 
                 const result = await response.json();
                 
@@ -900,6 +823,7 @@
         // Polling for new messages
         function startPolling() {
             if (messagePolling) clearInterval(messagePolling);
+            // Polling interval - aligns with MESSAGE_POLL_INTERVAL in wrangler.toml
             messagePolling = setInterval(loadMessages, 3000); // Poll every 3 seconds
         }
 
@@ -1001,18 +925,37 @@
         });
     </script>
 
-    <!-- Turnstile Script with race-proofing callback -->
+    <!-- Turnstile Script with deterministic initialization -->
     <script>
-        window.onloadTurnstileCallback = () => {
-            try {
-                if (typeof mountInvisibleWidget === 'function') mountInvisibleWidget();
-            } catch(_){}
-        };
-    </script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" async defer></script>
+        let tsVisibleWidgetId = null;
 
-    <!-- Invisible Turnstile widget for programmatic execution -->
-    <div id="ts-invisible" style="position: absolute; left: -9999px; visibility: hidden;"></div>
+        function onTSLoaded() {
+            try {
+                console.log(`Turnstile loaded. Rendering visible widget with sitekey: ${TS_SITEKEY}`);
+
+                // Clean and render the visible widget programmatically
+                const visibleElement = document.getElementById('ts-visible');
+                if (visibleElement && !tsVisibleWidgetId) {
+                    // Clear any stray text content
+                    visibleElement.innerHTML = '';
+
+                    tsVisibleWidgetId = turnstile.render('#ts-visible', {
+                        sitekey: TS_SITEKEY,
+                        theme: 'auto',
+                        callback: window.onFirstVerify
+                    });
+                    console.log('Visible Turnstile widget rendered, ID:', tsVisibleWidgetId);
+                }
+            } catch(error) {
+                console.error('Turnstile onload error:', error);
+            }
+        }
+
+        // Legacy callback for compatibility
+        window.onloadTurnstileCallback = onTSLoaded;
+    </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTSLoaded" async defer></script>
+
 
     <noscript>
       <div class="error-message noscript-message">
