@@ -73,7 +73,7 @@
           font-size="48" 
           font-weight="800" 
           fill="url(#primaryGradient)"
-          letter-spacing="-1px">Keyforge</text>
+          letter-spacing="-1px">Key&#8209;forge</text>
     
     <!-- Animated Shimmer Overlay -->
     <text x="240" y="75" 
@@ -83,7 +83,7 @@
           font-weight="800" 
           fill="url(#shimmerGradient)"
           letter-spacing="-1px"
-          opacity="0.6">Keyforge</text>
+          opacity="0.6">Key&#8209;forge</text>
     
     <!-- Highlight Overlay for Premium Effect -->
     <text x="240" y="75" 
@@ -92,7 +92,7 @@
           font-size="48" 
           font-weight="800" 
           fill="url(#highlightGradient)"
-          letter-spacing="-1px">Keyforge</text>
+          letter-spacing="-1px">Key&#8209;forge</text>
   </g>
   
   <!-- Subtle Underline Accent -->
@@ -172,6 +172,6 @@
           font-size="48" 
           font-weight="800" 
           fill="#10b981"
-          letter-spacing="-1px">Keyforge</text>
+          letter-spacing="-1px">Key&#8209;forge</text>
   </g>
 </svg>
