@@ -1672,3 +1672,22 @@ textarea {
   transform-origin: left center; /* keeps alignment neat */
 }
 
+.btn-invite {
+  background-color: #d97706;   /* dusky orange */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-invite:hover {
+  background-color: #b45309;   /* deeper shade */
+  transform: translateY(-1px);
+}
+
+.btn-invite:active {
+  background-color: #92400e;   /* pressed shade */
+  transform: translateY(0);
+}
