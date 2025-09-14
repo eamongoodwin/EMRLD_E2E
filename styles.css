@@ -1,6 +1,6 @@
 /* 
- * Emerald City - Secure Messenger Styles
- * "No Wizard Needed - Just Quantum-Grade Encryption"
+ * Key-Forge - Secure Messenger Styles
+ * "No Wizard Needed, Just Quantum Grade Encryption"
  */
 
 :root {
@@ -312,11 +312,11 @@ body::before {
   content: '';
   position: absolute;
   top: 0;
-  transform: translateX(-100%);
+  left: -100%;
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
-  transition: transform 0.4s ease;
+  transition: left 0.4s ease;
 }
 
 .tab.active {
@@ -333,7 +333,7 @@ body::before {
 }
 
 .tab:hover:before {
-  transform: translateX(100%);
+  left: 100%;
 }
 
 .tab:active {
@@ -542,6 +542,7 @@ textarea:focus {
 .input-group input[type="text"]::placeholder {
   color: var(--slate-400);
   font-weight: var(--font-weight-normal);
+  opacity: 0.6;
 }
 
 /* Decrypt Area */
@@ -632,6 +633,16 @@ textarea:focus {
 }
 
 /* Chat Header Logo (smaller) */
+.chat-header {
+  background: var(--gradient-emerald);
+  color: white;
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .chat-logo-container {
   display: flex;
   align-items: center;
@@ -725,53 +736,145 @@ textarea:focus {
   .input-area {
     padding-bottom: calc(var(--space-4, 16px) + env(safe-area-inset-bottom));
   }
-  
+
   .setup-screen {
     padding: 24px;
   }
-  
+
   .setup-screen h1 {
     font-size: 2.2rem;
   }
-  
+
   .messages {
     padding: 16px;
   }
-  
+
   .input-area {
     padding: 16px;
   }
-  
+
   .input-group {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .message.own {
     margin-left: 0;
+  }
+
+  /* Mobile header optimizations */
+  .logo-container {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .logo-icon {
+    display: none; /* Hide animated logo on mobile */
+  }
+
+  .logo-text {
+    height: 80px; /* Smaller on mobile */
+  }
+
+  .header {
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+
+  .header .tagline {
+    font-size: 0.9rem;
+  }
+
+  /* Chat header mobile */
+  .chat-header {
+    padding: 12px 16px;
+  }
+
+  .chat-logo-container {
+    gap: 8px;
+  }
+
+  .chat-logo-icon {
+    display: none; /* Hide animated logo in chat */
+  }
+
+  .chat-logo-text {
+    height: 60px; /* Smaller in chat */
+  }
+
+  .chat-room-title {
+    margin-left: 8px;
+  }
+
+  .chat-room-title h1 {
+    font-size: 1rem;
+  }
+
+  /* Room info responsive */
+  .room-info {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .room-details {
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 
 @media (max-width: 480px) {
   .header {
-    padding: 16px;
+    padding: 12px 8px;
   }
-  
+
   .header h1 {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
   }
-  
+
   .header .tagline {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
-  
+
   .tabs {
     flex-direction: column;
     gap: 4px;
   }
-  
+
   .setup-form {
     max-width: 100%;
+  }
+
+  .logo-text {
+    height: 60px; /* Even smaller on very small screens */
+  }
+
+  .chat-logo-text {
+    height: 50px;
+  }
+
+  .chat-header {
+    padding: 10px 12px;
+  }
+
+  .chat-room-title h1 {
+    font-size: 0.9rem;
+  }
+
+  .room-info {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .room-details {
+    font-size: 11px;
   }
 }
 
@@ -1322,6 +1425,7 @@ input[type="checkbox"], input[type="radio"], progress { accent-color: var(--emer
 /* Sticky bars (native app feel) */
 .header { position: sticky; top: 0; z-index: 10; }
 .input-area { position: sticky; bottom: 0; z-index: 10; }
+.chat-header { position: sticky; top: 0; z-index: 10; }
 
 /* iOS safe areas + 100svh */
 @media (max-width: 768px) {
@@ -1728,8 +1832,8 @@ textarea {
 /* Placeholders: a touch darker so they’re readable but still secondary */
 #setupScreen input::placeholder,
 #setupScreen textarea::placeholder {
-  color: var(--slate-500);
-  opacity: 1; /* ensure browsers don’t fade it further */
+  color: var(--slate-400);
+  opacity: 0.6;
 }
 
 /* 3) Features card: "Key-forge Security" heading + list items */
@@ -1755,7 +1859,7 @@ textarea {
   #setupScreen .form-group label,
   .features-card .features li { color: var(--slate-700); }
   #setupScreen input::placeholder,
-  #setupScreen textarea::placeholder { color: var(--slate-500); }
+  #setupScreen textarea::placeholder { color: var(--slate-400); opacity: 0.6; }
 }
 
 /* If you’re using data-theme="dark" toggles */
@@ -1764,7 +1868,7 @@ textarea {
 [data-theme="dark"] #setupScreen .form-group label,
 [data-theme="dark"] .features-card .features li { color: var(--slate-700); }
 [data-theme="dark"] #setupScreen input::placeholder,
-[data-theme="dark"] #setupScreen textarea::placeholder { color: var(--slate-500); }
+[data-theme="dark"] #setupScreen textarea::placeholder { color: var(--slate-400); opacity: 0.6; }
 
 /* === Auth visibility fix === */
 #verificationScreen.hidden,
