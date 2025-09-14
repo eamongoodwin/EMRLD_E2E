@@ -839,6 +839,7 @@ textarea:focus-visible {
 
 .keyforge-logo {
   height: 120px;
+  width: auto;
   margin-left: 8px;
 }
 
@@ -850,6 +851,7 @@ h1.keyforge-logo-fallback {
 
 .chat-header-logo {
   height: 100px;
+  width: auto;
   margin-left: 8px;
 }
 
@@ -872,7 +874,7 @@ h1.keyforge-logo-fallback {
 
 /* Shield Icon Styles */
 .shield-icon {
-  width: 120px;
+  width: auto;
   height: 120px;
   vertical-align: middle;
   margin-right: 12px;
@@ -895,7 +897,7 @@ h1.keyforge-logo-fallback {
 /* Clickable Room ID */
 .room-id-clickable {
   cursor: pointer;
-  color: var(--emerald-700);
+  color: var(--emerald-200);
   text-decoration: underline;
 }
 
@@ -1393,4 +1395,50 @@ textarea {
   *,:before,:after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .pulse { animation: none; }
   .app { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* ===== Composer layout: stable vertical stack ===== */
+.input-area {
+  /* override previous row flex */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-top: 1px solid var(--slate-100);
+}
+
+/* Input spans full card width */
+.input-area .input-wrapper,
+.input-area input[type="text"] {
+  width: 100%;
+}
+
+/* Buttons row (Send / Refresh / Share) */
+.composer-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;            /* wrap if space is tight, but remain one row logically */
+  align-items: center;
+}
+
+/* Nice grow on wide screens without stretching too much */
+.composer-actions .btn { flex: 0 0 auto; }
+
+/* EMRLD Chain (a.k.a. decrypt/info card) sits at the bottom, full width */
+.input-area .decrypt-area,
+.input-area .info-banner {
+  order: 3;
+  align-self: stretch;
+}
+
+/* Keep it comfy on small screens; input already full-width */
+@media (max-width: 768px) {
+  .composer-actions { justify-content: flex-start; }
+}
+
+/* Optional: on large viewports, keep stack order but let the buttons row and info card breathe */
+@container (min-width: 900px) {
+  .composer-actions { gap: 16px; }
 }
