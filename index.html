@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -375,11 +375,8 @@
                 </div>
 
                 <div class="card" style="max-width: 400px; margin: 0 auto;">
-                    <h3 style="text-align: center; margin-bottom: 20px;">
-                        <img src="/shield.svg" alt="Shield" style="width: 120px; height: 120px; vertical-align: middle; margin-right: 8px;">
-                        Security Check
-                    </h3>                   
-                        <p style="text-align: center; color: #666; margin-bottom: 25px;">
+                    <h3 style="text-align: center; margin-bottom: 20px;">🛡️ Security Check</h3>
+                    <p style="text-align: center; color: #666; margin-bottom: 25px;">
                         Please complete the security verification to access Keyforge secure messaging.
                     </p>
 
@@ -415,18 +412,18 @@
                 </div>
                 
                 <div class="tabs" role="tablist" aria-label="Room actions">
-                    <button class="tab active" role="tab" aria-selected="true" aria-controls="createCard"
+                    <button id="createTabBtn" class="tab active" role="tab" aria-selected="true" aria-controls="createCard"
                             onclick="switchTab('create')">
                         <span>Create Room</span>
                     </button>
-                    <button class="tab" role="tab" aria-selected="false" aria-controls="joinCard"
+                    <button id="joinTabBtn" class="tab" role="tab" aria-selected="false" aria-controls="joinCard"
                             onclick="switchTab('join')">
                         <span>Join Room</span>
                     </button>
                 </div>
                 
                 <div class="grid">
-                  <div class="card" id="createCard" role="tabpanel" aria-labelledby="createTab">
+                  <div class="card" id="createCard" role="tabpanel" aria-labelledby="createTabBtn">
                     <form id="createTab" onsubmit="event.preventDefault(); createRoom();">
                       <h3>Start a Secure Chat</h3>
                       <div class="form-group">
@@ -449,7 +446,7 @@
                   </div>
 
                   <!-- NEW: Join card lives in the same grid and has the same styling -->
-                  <div class="card hidden" id="joinCard" role="tabpanel" aria-labelledby="joinTab">
+                  <div class="card hidden" id="joinCard" role="tabpanel" aria-labelledby="joinTabBtn">
                     <form id="joinTab" onsubmit="event.preventDefault(); joinRoom();">
                       <h3>Join Existing Room</h3>
                       <div class="form-group">
@@ -475,20 +472,17 @@
                   </div>
 
                   <div class="card">
-                    <div class="features">
-                        <h3>
-                            <img src="/shield.svg" alt="Shield" style="width: 120px; height: 120px; vertical-align: middle; margin-right: 12px;">
-                            Keyforge Security
-                        </h3>
-                        <ul>
-                            <li>8-Pass AES-256-CBC multi-round encryption</li>
-                            <li>2048-bit PBKDF2 key derivation (1.6M iterations)</li>
-                            <li>QKD with privacy amplification</li>
-                            <li>XOR masking with quantum-inspired keys</li>
-                            <li>NIST PQC-aligned hybrid architecture</li>
-                        </ul>
+                        <div class="features">
+                            <h3>🛡️ Keyforge Security</h3>
+                            <ul>
+                                <li>8-Pass AES-256-CBC multi-round encryption</li>
+                                <li>2048-bit PBKDF2 key derivation (1.6M iterations)</li>
+                                <li>QKD with privacy amplification</li>
+                                <li>XOR masking with quantum-inspired keys</li>
+                                <li>NIST PQC-aligned hybrid architecture</li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
                 </div>
                 
                 <div id="setupStatus" aria-live="polite"></div>
@@ -575,7 +569,6 @@
         let messagePolling = null;
         let isLoading = false;
         let renderedIds = new Set();
-        let polling = null;
         let messageCache = new Map();
         let lastMessageId = null;
         let optimisticMessages = new Map();
@@ -702,13 +695,17 @@
         // Mint fresh token using invisible widget with callback
         async function mintToken(action = '') {
             const id = await ensureInvisibleWidget();
-            turnstile.reset(id);
+            // Guard timer because execute() has no official timeout option
             return new Promise((resolve) => {
+                const guard = setTimeout(() => {
+                    console.warn('Turnstile execute timeout');
+                    resolve(null);
+                }, 12000);
+
                 turnstile.execute(id, {
                     action,
-                    callback: (tok) => { console.log('Retrieved token:', tok.slice(0, 20) + '…'); resolve(tok); },
-                    'error-callback': (e) => { console.error('Turnstile error:', e); resolve(null); },
-                    timeout: 10000
+                    callback: (tok) => { clearTimeout(guard); console.log('Retrieved token:', tok.slice(0,20)+'…'); resolve(tok); },
+                    'error-callback': (e) => { clearTimeout(guard); console.error('Turnstile error:', e); resolve(null); }
                 });
             });
         }
@@ -889,7 +886,6 @@
                 messageCache.clear();
                 optimisticMessages.clear();
             } catch {}
-            if (polling) { clearInterval(polling); polling = null; }
             if (messagePolling) { clearInterval(messagePolling); messagePolling = null; }
             lastMessageId = null;
 
@@ -913,7 +909,7 @@
             console.log('Starting message loading...');
             // Kick off fresh load + polling
             loadMessages();
-            polling = setInterval(loadMessages, 3000);
+            messagePolling = setInterval(loadMessages, 3000);
             console.log('enterChat() complete');
         }
 
@@ -1029,6 +1025,12 @@
             optimisticMessages.set(optimisticId, messageDiv);
             
             try {
+                // Get fresh Turnstile token
+                const token = await mintToken('send_message');
+                if (!token) {
+                    throw new Error('Failed to get security token');
+                }
+
                 const response = await fetch('/api/message/send', {
                     method: 'POST',
                     headers: {
@@ -1357,7 +1359,13 @@
         savedTurnstileToken = null;
         isVerified = false;
         document.getElementById('verificationStatus').innerHTML =
-          '<div class="error-message">Verification expired. Please try again.</div>';\n\n        // Reset the visible widget\n        const el = document.getElementById('turnstile-widget');\n        if (window.turnstile && el) {\n          turnstile.reset();\n        }
+          '<div class="error-message">Verification expired. Please try again.</div>';
+
+        // Reset the visible widget
+        const el = document.getElementById('turnstile-widget');
+        if (window.turnstile && el) {
+          turnstile.reset();
+        }
       }
     </script>
 
@@ -1366,5 +1374,7 @@
         JavaScript is required to run Turnstile and use this app.
       </div>
     </noscript>
-    <!-- Invisible turnstile widget for token minting (outside hidden containers) -->\n    <div id=\"ts-invisible\" style=\"position:absolute;left:-9999px;top:-9999px;\"></div>\n</body>
+    <!-- Invisible turnstile widget for token minting (outside hidden containers) -->
+    <div id="ts-invisible" style="position:absolute;left:-9999px;top:-9999px;"></div>
+</body>
 </html>
