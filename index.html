@@ -284,8 +284,8 @@
             document.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (!this.disabled) {
-                        this.classList.add('loading');
-                        setTimeout(() => this.classList.remove('loading'), 1000);
+                        this.classList.add('is-loading');
+                        setTimeout(() => this.classList.remove('is-loading'), 1000);
                     }
                 });
             });
@@ -830,7 +830,11 @@
         // Status Display
         function showStatus(message, type) {
             const statusDiv = document.getElementById('setupStatus');
-            statusDiv.innerHTML = `<div class="status ${type === 'success' ? 'success' : 'error'}">${message}</div>`;
+            const statusElement = document.createElement('div');
+            statusElement.className = `status ${type === 'success' ? 'success' : 'error'}`;
+            statusElement.textContent = message;
+            statusDiv.innerHTML = '';
+            statusDiv.appendChild(statusElement);
             setTimeout(() => statusDiv.innerHTML = '', 6000);
         }
 
