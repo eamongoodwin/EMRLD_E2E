@@ -1504,3 +1504,16 @@ textarea {
 .btn-large:before {
   display: none; /* disable shine */
 }
+
+/* Scoped just to text inputs inside the wrapper */
+.input-wrapper input[type="text"]:focus-visible {
+  outline: none; /* remove square default */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  border-radius: 12px; /* consistent rounded highlight */
+}
+
+/* Keep wrapper border consistent when active */
+.input-wrapper:focus-within {
+  border-color: var(--emerald-500);
+  border-radius: 12px;
+}
