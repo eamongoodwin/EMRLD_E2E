@@ -1,5 +1,6 @@
 /* 
- * Keyforge Styles
+ * Emerald City - Secure Messenger Styles
+ * "No Wizard Needed - Just Quantum-Grade Encryption"
  */
 
 :root {
@@ -861,4 +862,122 @@ textarea:focus-visible {
 
 .ml-3 {
   margin-left: 12px;
+}
+
+/* ============================================
+   Additional Utility Classes
+   ============================================ */
+
+/* Generic image sizing classes */
+.img-lg {
+  height: 120px;
+  margin-left: 8px;
+}
+
+.img-md {
+  width: 120px;
+  height: 120px;
+}
+
+.img-inline {
+  vertical-align: middle;
+  margin-right: 12px;
+}
+
+/* Heading utilities */
+.h3-center {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Text styling variants */
+.text-muted {
+  color: var(--slate-500);
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.text-error {
+  color: #991b1b;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-gray {
+  color: var(--slate-600);
+}
+
+.mb-6 {
+  margin-bottom: 25px;
+}
+
+/* Button variants - standardized */
+.btn {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-system);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+  min-width: 120px;
+  width: 100%;
+  margin: 5px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: var(--gradient-emerald);
+  color: white;
+}
+
+.btn-success {
+  background: var(--jade-500);
+  color: white;
+}
+
+.btn-success:hover {
+  background: var(--jade-600);
+}
+
+.btn-secondary {
+  background: var(--slate-500);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: var(--slate-600);
+}
+
+/* Card variations */
+.card-centered {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* NoScript styling */
+.noscript-message {
+  margin-top: 10px;
+  color: var(--slate-700);
+  text-align: center;
 }
