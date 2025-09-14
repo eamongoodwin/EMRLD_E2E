@@ -1,0 +1,20 @@
+# robots.txt for key-forge.org — updated 2025-09-13
+
+# Crawl everything that's public
+User-agent: *
+Allow: /
+
+# Keep non-public/system areas out of the index
+Disallow: /admin/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /cgi-bin/
+Disallow: /api/internal/
+
+# Avoid indexing parameterized duplicates / tracking URLs
+Disallow: /*?*utm_*
+Disallow: /*?*fbclid=*
+Disallow: /*?*gclid=*
+Disallow: /*?*ref=*
+Disallow: /*?*session=*
+Disallow: /*?*token=*
