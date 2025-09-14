@@ -390,6 +390,20 @@ textarea:focus {
 
 .input-group input[type="text"] {
   flex: 1;
+  padding: 14px 16px;
+  border: 2px solid var(--slate-200);
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: var(--font-system);
+  transition: all 0.2s ease;
+  background: white;
+  min-height: 50px;
+}
+
+.input-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--emerald-400);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
 /* Decrypt Area */
@@ -693,6 +707,20 @@ textarea:focus-visible {
 /* ============================================
    Additional CSS Classes for Inline Styles
    ============================================ */
+
+/* Badge Styles */
+.badge {
+  display: inline-block;
+  background: var(--gradient-emerald);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
 /* Header and Logo Styles */
 .header-logo-container {
