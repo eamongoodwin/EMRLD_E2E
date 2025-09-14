@@ -291,50 +291,7 @@ textarea:focus {
   transform: translateY(-1px);
 }
 
-/* Button Styles */
-button {
-  padding: 14px 28px;
-  background: var(--gradient-emerald);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  font-family: var(--font-system);
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-md);
-  min-width: 120px;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-button.secondary {
-  background: var(--slate-500);
-}
-
-button.secondary:hover {
-  background: var(--slate-600);
-}
-
-.primary-button {
-  width: 100%;
-  padding: 16px;
-  font-size: 17px;
-}
+/* Note: Button styling now handled by .btn classes below */
 
 /* Messages Area */
 .messages {
@@ -696,7 +653,7 @@ button.secondary:hover {
 }
 
 /* Focus Styles for Accessibility */
-button:focus-visible,
+.btn:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--emerald-500);
@@ -713,7 +670,7 @@ textarea:focus-visible {
     border: 2px solid var(--slate-400);
   }
   
-  button {
+  .btn {
     border: 2px solid var(--emerald-700);
   }
 }
@@ -750,9 +707,10 @@ textarea:focus-visible {
   margin-left: 8px;
 }
 
-.keyforge-logo-fallback {
+h1.keyforge-logo-fallback {
   margin: 0;
   color: var(--emerald-700);
+  font-size: 1.5rem;
 }
 
 .chat-header-logo {
@@ -836,10 +794,6 @@ textarea:focus-visible {
   margin-left: 8px;
 }
 
-/* NoScript Message */
-.noscript-message {
-  margin-top: 10px;
-}
 
 /* Container Classes to Replace Complex Inline Styles */
 .flex-center {
