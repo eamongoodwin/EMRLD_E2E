@@ -1517,3 +1517,17 @@ textarea {
   border-color: var(--emerald-500);
   border-radius: 12px;
 }
+/* Scoped just to text inputs inside the wrapper */
+.input-wrapper input[type="text"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  transition: box-shadow 0.18s var(--ease-out-expo), border-color 0.18s var(--ease-out-expo);
+}
+
+/* Keep wrapper border consistent when active */
+.input-wrapper:focus-within {
+  border-color: var(--emerald-500);
+  border-radius: var(--radius-md);
+  transition: box-shadow 0.18s var(--ease-out-expo), border-color 0.18s var(--ease-out-expo);
+}
