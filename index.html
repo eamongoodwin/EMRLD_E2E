@@ -17,15 +17,15 @@
                 <div class="header">
                     <div class="flex-center-mb">
                         <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo" onerror="this.style.display='none';">
-                        <img src="/keyforge.svg" alt="Keyforge" style="height: 120px; margin-left: 8px;" onerror="this.innerHTML='<h1 style=\'margin:0;color:#1e3c72;\'>Keyforge</h1>';">
+                        <img src="/keyforge.svg" alt="Keyforge" class="img-lg" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
                     </div>
                     <p class="subtitle">Secure Access Verification</p>
                 </div>
 
-                <div class="card" style="max-width: 400px; margin: 0 auto;">
-                    <img src="/shield.svg" alt="Shield" style="width: 120px; height: 120px; vertical-align: middle; margin-right: 12px;">
-                    <h3 style="text-align: center; margin-bottom: 20px;">Security Check</h3>
-                    <p style="text-align: center; color: #666; margin-bottom: 25px;">
+                <div class="card card-centered">
+                    <img src="/shield.svg" alt="Shield" class="img-md img-inline">
+                    <h3 class="h3-center">Security Check</h3>
+                    <p class="text-center text-gray mb-6">
                         Please complete the security verification to access Keyforge secure messaging.
                     </p>
 
@@ -42,7 +42,7 @@
                 <div class="header">
                     <div class="flex-center-mb">
                         <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo" onerror="this.style.display='none';">
-                        <img src="/keyforge.svg" alt="Keyforge" style="height: 120px; margin-left: 8px;" onerror="this.innerHTML='<h1 style=\'margin:0;color:#1e3c72;\'>Keyforge</h1>';">
+                        <img src="/keyforge.svg" alt="Keyforge" class="img-lg" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
                     </div>
                     <p class="subtitle">Future-proof messaging.</p>
                 </div>
@@ -114,7 +114,7 @@
 
                   <div class="card">
                         <div class="features">
-                            <img src="/shield.svg" alt="Shield" style="width: 120px; height: 120px; vertical-align: middle; margin-right: 12px;">
+                            <img src="/shield.svg" alt="Shield" class="img-md img-inline">
                             <h3>Keyforge Security</h3>
                             <ul>
                                 <li>8-Pass AES-256-CBC multi-round encryption</li>
@@ -133,11 +133,11 @@
             <!-- Main Chat Interface -->
             <div id="chatScreen" class="hidden">
                 <div class="chat-header">
-                    <div style="display: flex; align-items: center;">
+                    <div class="flex-align-center">
                         <img src="/logo_ani01.svg" alt="Keyforge" class="logo" onerror="this.style.display='none';">
-                        <img src="/keyforge.svg" alt="Keyforge" style="height: 100px; margin-left: 8px;" onerror="this.innerHTML='<h1 style=\'margin:0;color:#1e3c72;\'>Keyforge</h1>';">
-                        <div style="margin-left: 12px;">
-                            <h1 id="roomTitle" style="font-size: 1.2rem;">room title</h1>
+                        <img src="/keyforge.svg" alt="Keyforge" class="chat-header-logo" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';">
+                        <div class="ml-3">
+                            <h1 id="roomTitle" class="chat-room-title">room title</h1>
                         </div>
                     </div>
                     <div class="badge">Live</div>
@@ -146,7 +146,7 @@
                 <div class="room-info">
                     <div class="room-details">
                         <div id="roomDetails">
-                            Room ID: <span id="roomIdSpan" onclick="copyRoomId()" style="cursor: pointer; color: #1e3c72; text-decoration: underline;" title="Click to copy Room ID">emerald_demo</span> • User: Placeholder
+                            Room ID: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">emerald_demo</span> • User: Placeholder
                         </div>
                     </div>
                     <div class="status-indicator">
@@ -162,7 +162,7 @@
                             <span>Welcome Bot</span>
                             <div>
                                 <span class="encryption-badge">EMRLD</span>
-                                <span style="color: #64748b; font-weight: normal; margin-left: 8px;">
+                                <span class="text-muted">
                                     <script>document.write(new Date().toLocaleTimeString())</script>
                                 </span>
                             </div>
@@ -496,7 +496,7 @@
 
             document.getElementById('roomTitle').textContent = currentRoom.name || 'Room';
             document.getElementById('roomDetails').innerHTML =
-                `Room: <span id="roomIdSpan" onclick="copyRoomId()" style="cursor: pointer; color: #1e3c72; text-decoration: underline;" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Invite with Room ID and password`;
+                `Room: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Invite with Room ID and password`;
 
             const box = document.getElementById('messagesContainer');
             box.innerHTML = '';
@@ -606,8 +606,8 @@
                 <div class="message-header">
                     <span>${escapeHtml(currentUser)}</span>
                     <div>
-                        <span class="encryption-badge" style="background: #f59e0b;">SENDING</span>
-                        <span style="color: #64748b; font-weight: normal; margin-left: 8px;">
+                        <span class="encryption-badge sending">SENDING</span>
+                        <span class="text-muted">
                             ${new Date().toLocaleTimeString()}
                         </span>
                     </div>
@@ -798,7 +798,7 @@
                         <span>${escapeHtml(msg.sender)}</span>
                         <div>
                             <span class="encryption-badge">EMRLD</span>
-                            <span style="color: #64748b; font-weight: normal; margin-left: 8px;">
+                            <span class="text-muted">
                                 ${new Date(msg.timestamp).toLocaleTimeString()}
                             </span>
                         </div>
@@ -812,8 +812,8 @@
                     <div class="message-header">
                         <span>${escapeHtml(msg.sender)}</span>
                         <div>
-                            <span style="background: #dc2626; color: white; font-size: 10px; padding: 4px 8px; border-radius: 6px;">ENCRYPTED</span>
-                            <span style="color: #991b1b; font-weight: normal; margin-left: 8px;">
+                            <span class="encryption-badge encrypted">ENCRYPTED</span>
+                            <span class="text-error">
                                 ${new Date(msg.timestamp).toLocaleTimeString()}
                             </span>
                         </div>
@@ -938,7 +938,7 @@
     <!-- Turnstile verification callbacks removed for testing -->
 
     <noscript>
-      <div class="error-message" style="margin-top:10px;">
+      <div class="error-message noscript-message">
         JavaScript is required to run Turnstile and use this app.
       </div>
     </noscript>
