@@ -240,13 +240,21 @@
         }
 
         // Simplified: Only visible widget for initial verification
+        let hasInitializedUI = false;
 
         // First verification callback
         window.onFirstVerify = function(token) {
             console.log('First verification successful');
             sessionStorage.setItem(VERIFIED_KEY, String(Date.now()));
-            showMainInterface();
+            if (!hasInitializedUI) {
+                showMainInterface();   // only once
+                hasInitializedUI = true;
+            } else {
+                console.log("Token refreshed silently");
+                // just store token and continue, don’t reset UI
+            }
         };
+
 
         // Simple fetch helper
         async function simpleFetch(url, body) {
@@ -269,12 +277,18 @@
         function initializeApp() {
             console.log('Keyforge initialized');
 
-            // Check session verification
             if (isSessionVerified()) {
-                showMainInterface();
+                if (!hasInitializedUI) {
+                    showMainInterface();
+                    hasInitializedUI = true;
+                }
             } else {
                 showVerificationScreen();
             }
+
+    // button loading states remain the same...
+}
+
 
             // Add loading states to buttons
             document.querySelectorAll('button').forEach(btn => {
