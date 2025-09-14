@@ -17,7 +17,6 @@
   --emerald-900: #064e3b;
   
   /* Gem Accent Colors */
-  --jade-50: #ecfdf5; /* Fix missing variable */
   --jade-400: #4ade80;
   --jade-500: #22c55e;
   --jade-600: #16a34a;
@@ -30,7 +29,7 @@
   --slate-400: #64748b; /* Enhanced from #94a3b8 for better contrast */
   --slate-500: #475569; /* Enhanced from #64748b */
   --slate-600: #334155; /* Enhanced from #475569 */
-  --slate-700: #1e293b; /* Fix duplicate value */
+  --slate-700: #334155;
   --slate-800: #1e293b;
   --slate-900: #0f172a;
   
@@ -71,27 +70,6 @@
   --gradient-emerald-light: linear-gradient(135deg, var(--emerald-400) 0%, var(--jade-500) 100%);
   --gradient-city: linear-gradient(135deg, var(--emerald-600) 0%, var(--emerald-800) 50%, var(--slate-800) 100%);
 
-  /* Spacing Scale */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-
-  /* Border Radius Scale */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-
-  /* Enhanced Focus Ring */
-  --ring-emerald: 0 0 0 4px rgba(16, 185, 129, 0.12);
-
   /* Semantic Color Tokens */
   --color-primary: var(--emerald-600);
   --color-primary-hover: var(--emerald-700);
@@ -105,9 +83,6 @@
   --color-border: var(--slate-200);
   --color-border-focus: var(--emerald-400);
   --color-error: #991b1b;
-
-  /* Native theme support */
-  color-scheme: light dark;
 }
 
 /* Reset and Base Styles */
@@ -153,11 +128,12 @@ body::before {
 .app {
   width: 100%;
   max-width: 900px;
-  height: 90vh;
+  min-height: 90vh;
+  height: auto;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 20px;
-  overflow: auto;
+  overflow-y: auto;
   box-shadow: var(--shadow-emerald);
   display: flex;
   flex-direction: column;
@@ -178,9 +154,7 @@ body::before {
   color: white;
   padding: 24px;
   text-align: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: relative;
   overflow: hidden;
 }
 
@@ -254,8 +228,7 @@ body::before {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  overflow-y: auto;
+  justify-content: center;
 }
 
 .setup-screen h1 {
@@ -311,9 +284,7 @@ body::before {
   font-size: var(--font-size-base);
   font-family: var(--font-system);
   border-radius: 8px;
-  transition-property: transform, box-shadow, background-color, color;
-  transition-duration: 0.18s;
-  transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--slate-600);
   line-height: var(--line-height-normal);
   position: relative;
@@ -383,9 +354,7 @@ textarea {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-normal);
-  transition-property: transform, box-shadow, border-color;
-  transition-duration: 0.18s;
-  transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: all 0.2s ease;
   background: white;
   font-family: var(--font-system);
   color: var(--slate-700);
@@ -407,29 +376,9 @@ textarea:focus {
   overflow-y: auto;
   padding: 24px;
   background: var(--slate-50);
-  background-image:
+  background-image: 
     radial-gradient(circle at 25% 25%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 75% 75%, rgba(52, 211, 153, 0.02) 0%, transparent 50%);
-  overscroll-behavior-y: contain;
-  scrollbar-gutter: stable both-edges;
-  content-visibility: auto;
-  contain-intrinsic-size: 400px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--slate-300) var(--slate-100);
-}
-
-.messages::-webkit-scrollbar {
-  width: 10px;
-}
-
-.messages::-webkit-scrollbar-track {
-  background: var(--slate-100);
-}
-
-.messages::-webkit-scrollbar-thumb {
-  background: var(--slate-300);
-  border-radius: 999px;
-  border: 2px solid var(--slate-100);
 }
 
 .message {
@@ -477,9 +426,7 @@ textarea:focus {
 
 .message-content {
   color: var(--slate-700);
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  white-space: pre-wrap;
+  word-wrap: break-word;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-relaxed);
@@ -507,19 +454,20 @@ textarea:focus {
 .message-encrypted .message-content {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: #7f1d1d; /* Better contrast */
+  color: #991b1b;
 }
 
 /* Input Area */
 .input-area {
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px;
   background: white;
   border-top: 1px solid var(--slate-200);
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
 }
-
+/*
 .input-group {
   display: flex;
   gap: 12px;
@@ -554,6 +502,44 @@ textarea:focus {
 .input-group input[type="text"]::placeholder {
   color: var(--slate-400);
   font-weight: var(--font-weight-normal);
+}
+*/ 
+/* Input wrapper styling */
+.input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid var(--emerald-400);
+  border-radius: 12px;
+  padding: 0 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 12px 0;
+  font-size: var(--font-size-base);
+  background: transparent;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--emerald-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+/* Button row */
+.composer-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.composer-actions .btn {
+  flex: 1; /* keeps them consistent width on mobile */
 }
 
 /* Decrypt Area */
@@ -592,6 +578,45 @@ textarea:focus {
   border: 1px solid #fca5a5;
 }
 
+/* Features List */
+.features {
+  text-align: left;
+  margin: 32px 0;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--slate-50), white);
+  border-radius: 16px;
+  border: 1px solid var(--slate-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.features h3 {
+  color: var(--emerald-700);
+  margin-bottom: 16px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.features li {
+  padding: 8px 0;
+  color: var(--slate-700);
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+.features li::before {
+  content: "✓";
+  margin-right: 12px;
+  font-size: 12px;
+}
 
 /* Typing Indicator */
 .typing-indicator {
@@ -614,57 +639,6 @@ textarea:focus {
   border-radius: 12px;
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Logo Container and Elements */
-.logo-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.logo-text {
-  height: 40px;
-  width: auto;
-}
-
-.logo-icon {
-  height: 50px;
-  width: auto;
-  /* Remove all frame/glow effects */
-  filter: none;
-  background: none;
-  padding: 0;
-  border-radius: 0;
-  backdrop-filter: none;
-  border: none;
-}
-
-/* Chat Header Logo (smaller) */
-.chat-logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.chat-logo-icon {
-  height: 60px;
-  width: auto;
-  /* Clean logo without effects */
-  filter: none;
-  background: none;
-  padding: 0;
-  border-radius: 0;
-  backdrop-filter: none;
-  border: none;
-}
-
-.chat-logo-text {
-  height: 80px;
-  width: auto;
 }
 
 /* Utility Classes */
@@ -721,13 +695,9 @@ textarea:focus {
 /* Responsive Design */
 @media (max-width: 768px) {
   .app {
-    height: 100svh;
+    height: 100vh;
     border-radius: 0;
     max-width: 100%;
-  }
-
-  .input-area {
-    padding-bottom: calc(var(--space-4, 16px) + env(safe-area-inset-bottom));
   }
   
   .setup-screen {
@@ -777,29 +747,6 @@ textarea:focus {
   .setup-form {
     max-width: 100%;
   }
-}
-
-/* Manual Dark Theme Control */
-[data-theme="dark"] {
-  --slate-50: #0f172a;
-  --slate-100: #1e293b;
-  --slate-200: #334155;
-  --slate-300: #475569;
-  --slate-400: #64748b;
-  --slate-500: #94a3b8;
-  --slate-600: #cbd5e0;
-  --slate-700: #e2e8f0;
-  --slate-800: #f1f5f9;
-  --slate-900: #f8fafc;
-}
-
-[data-theme="dark"] body {
-  background: linear-gradient(135deg, var(--emerald-900) 0%, var(--slate-900) 50%, #000 100%);
-}
-
-[data-theme="dark"] .app {
-  background: rgba(15, 23, 42, 0.95);
-  border-color: rgba(16, 185, 129, 0.3);
 }
 
 /* Dark Mode Support */
@@ -867,38 +814,12 @@ textarea:focus {
   }
 }
 
-/* ARIA-based Tab States */
-.tab[aria-selected="true"] {
-  background: var(--gradient-emerald);
-  color: white;
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px) scale(1.02);
-}
-
-.tab[aria-selected="false"]:hover {
-  background: var(--emerald-50);
-  color: var(--emerald-700);
-  transform: translateY(-1px);
-}
-
-/* Enhanced Focus Styles for Accessibility */
-:where(.btn, .tab, input, textarea):focus-visible {
+/* Focus Styles for Accessibility */
+.btn:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
   outline: 2px solid var(--emerald-500);
   outline-offset: 2px;
-  box-shadow: var(--ring-emerald);
-}
-
-/* Premium selection colors */
-::selection {
-  background: var(--selection-bg, rgba(16, 185, 129, 0.22));
-  color: inherit;
-}
-
-/* Native form theming */
-input[type="checkbox"],
-input[type="radio"],
-progress {
-  accent-color: var(--emerald-600);
 }
 
 /* High Contrast Mode */
@@ -961,6 +882,7 @@ progress {
 
 .keyforge-logo {
   height: 120px;
+  width: auto;
   margin-left: 8px;
 }
 
@@ -972,6 +894,7 @@ h1.keyforge-logo-fallback {
 
 .chat-header-logo {
   height: 100px;
+  width: auto;
   margin-left: 8px;
 }
 
@@ -994,7 +917,7 @@ h1.keyforge-logo-fallback {
 
 /* Shield Icon Styles */
 .shield-icon {
-  width: 120px;
+  width: auto;
   height: 120px;
   vertical-align: middle;
   margin-right: 12px;
@@ -1017,7 +940,7 @@ h1.keyforge-logo-fallback {
 /* Clickable Room ID */
 .room-id-clickable {
   cursor: pointer;
-  color: var(--emerald-700);
+  color: var(--emerald-200);
   text-decoration: underline;
 }
 
@@ -1087,8 +1010,8 @@ h1.keyforge-logo-fallback {
 }
 
 .img-md {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
 }
 
 .img-inline {
@@ -1115,6 +1038,10 @@ h1.keyforge-logo-fallback {
   margin-left: 8px;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .text-gray {
   color: var(--slate-600);
 }
@@ -1133,11 +1060,7 @@ h1.keyforge-logo-fallback {
   font-weight: var(--font-weight-semibold);
   font-family: var(--font-system);
   line-height: var(--line-height-normal);
-  transition-property: transform, box-shadow, background-color, opacity;
-  transition-duration: 0.18s;
-  transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
-  touch-action: manipulation;
-  will-change: transform;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
   box-shadow: var(--shadow-md), 0 0 0 0 transparent;
   min-width: 120px;
   width: auto;
@@ -1155,8 +1078,8 @@ h1.keyforge-logo-fallback {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transition: left 0.8s ease;
 }
 
 .btn:hover {
@@ -1214,42 +1137,6 @@ h1.keyforge-logo-fallback {
   margin-top: 10px;
   color: var(--slate-700);
   text-align: center;
-}
-
-/* Message Grouping */
-.message + .message {
-  margin-top: 10px;
-}
-
-.message[data-same-author="true"] {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  margin-top: 6px;
-}
-
-.message.own[data-same-author="true"] {
-  border-top-right-radius: 10px;
-}
-
-/* Container queries for responsive components */
-.app {
-  container-type: inline-size;
-}
-
-@container (max-width: 560px) {
-  .tabs {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .message {
-    padding: 14px 16px;
-  }
-
-  .input-group {
-    gap: 8px;
-    flex-direction: column;
-  }
 }
 
 /* =========================================================
@@ -1599,83 +1486,91 @@ textarea {
   .composer-actions { gap: 16px; }
 }
 
-/* --- Grid: two columns for the forms; features spans full row --- */
-.grid {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: 1fr;             /* mobile */
+.room-info .room-id-clickable {
+  color: #ffffff;          /* white for visibility */
+  font-weight: 600;        /* makes it stand out */
 }
 
-@media (min-width: 880px) {
-  .grid { grid-template-columns: 1fr 1fr; }/* desktop: 2 cols */
-  .grid > .card:nth-child(3) {
-    grid-column: 1 / -1;                  /* features card full width */
-    justify-self: center;                 /* center the card itself */
-    max-width: 720px;                     /* optional: nicer width */
-    width: 100%;
-  }
+.room-info .room-id-clickable:hover {
+  color: var(--emerald-200); /* light green on hover */
 }
 
-/* ---- Center the cards in the grid ---- */
-.grid{
-  display:grid;
-  gap:24px;
-  justify-items:center;              /* centers each card */
+.input-group input[type="text"]:focus {
+  outline: none; /* remove default focus outline */
+  border-color: var(--emerald-500); /* custom focus border */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); /* optional soft glow */
 }
 
-.grid > .card{
-  width:100%;
-  max-width:520px;                   /* nice width for Forge/Join */
-  align-self:start;
-  overflow:visible;                  /* no clipping */
+.btn-large:before {
+  display: none; /* disable shine */
 }
 
-/* features card can be a bit wider */
-.features-card{
-  max-width:760px;
-  margin-bottom:32px;
+/* Scoped just to text inputs inside the wrapper */
+.input-wrapper input[type="text"]:focus-visible {
+  outline: none; /* remove square default */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  border-radius: 12px; /* consistent rounded highlight */
 }
 
-/* --- Make sure cards never clip content --- */
-.card {
-  background: #fff;
-  border: 1px solid var(--slate-200);
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: var(--shadow-sm);
-  overflow: visible;                       /* <- prevents "cut off" */
-  align-self: start;                       /* grow by content, not row height */
+/* Keep wrapper border consistent when active */
+.input-wrapper:focus-within {
+  border-color: var(--emerald-500);
+  border-radius: 12px;
+}
+/* Scoped just to text inputs inside the wrapper */
+.input-wrapper input[type="text"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  transition: box-shadow 0.18s var(--ease-out-expo), border-color 0.18s var(--ease-out-expo);
 }
 
-/* ---- Features list: centered block + SVG bullets ---- */
-.features{ text-align:center; }
-.features h3{ margin-bottom:12px; }
-
-.features ul{
-  list-style:none;
-  padding:0;
-  margin:12px auto 0;
-  display:inline-block;              /* centers the whole list */
-  text-align:left;                   /* but keep text left inside */
-  max-width:42rem;
+/* Keep wrapper border consistent when active */
+.input-wrapper:focus-within {
+  border-color: var(--emerald-500);
+  border-radius: var(--radius-md);
+  transition: box-shadow 0.18s var(--ease-out-expo), border-color 0.18s var(--ease-out-expo);
 }
 
-.features li{
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-  padding:8px 0;
-  line-height:var(--line-height-relaxed);
+/* Center align info-banner text */
+.info-banner {
+  text-align: center;
 }
 
-.features li::before{
-  content:"";
-  flex:0 0 18px;
-  width:18px;
-  height:18px;
-  margin-top:3px;                    /* align with first line of text */
-  background:url("/logo_ani01.svg") no-repeat center / contain;
+/* Center align features box content */
+.features {
+  text-align: center;
 }
 
-/* remove any old checkmark bullet styling */
-.features li::marker{ content:none; }
+.features h3 {
+  text-align: center; /* override left heading */
+}
+
+.features ul {
+  display: inline-block; /* keeps the list centered in the box */
+  text-align: left;      /* keeps checkmark + text aligned inside */
+  margin: 0 auto;
+}
+
+/* Center the entire form as a narrow column */
+.setup-form {
+  max-width: 420px;   /* adjust to taste (400–500px works well) */
+  margin: 0 auto;     /* keeps it centered */
+  width: 100%;        /* fluid, but capped by max-width */
+  text-align: left;   /* labels & headings align properly */
+}
+
+/* Inputs always fill the form column, not full screen */
+.setup-form input[type="text"],
+.setup-form input[type="password"],
+.setup-form textarea {
+  width: 100%;
+  margin: 0;          /* reset auto margins */
+  max-width: none;    /* let them fully expand inside setup-form */
+
+  .setup-screen {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+}
