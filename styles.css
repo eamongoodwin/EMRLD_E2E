@@ -1904,3 +1904,91 @@ textarea {
     color: #000000 !important;
   }
 }
+
+/* Frosted header card for setup screen */
+#setupScreen .header {
+  background: rgba(255, 255, 255, 0.55);  /* lighter translucent white */
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  color: var(--slate-800);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Subtitle muted for readability */
+#setupScreen .header .subtitle {
+  color: var(--slate-700);
+}
+
+/* Logo text pops a little */
+#setupScreen .header .logo-text {
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.12));
+}
+
+/* Frosted info-banner */
+.info-banner {
+  background: rgba(255, 255, 255, 0.55);  /* translucent white */
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  margin: var(--space-6) 0;
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+  color: var(--slate-800);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Strong text */
+.info-banner strong {
+  font-weight: var(--font-weight-semibold);
+  color: var(--emerald-800);
+}
+
+/* Subtext */
+.info-banner br + * {
+  color: var(--slate-600);
+  font-size: var(--font-size-sm);
+}
+
+/* Frosted tabs bar */
+.tabs {
+  background: rgba(255, 255, 255, 0.55);   /* translucent white */
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-6) 0;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Tabs themselves (Forge / Join) */
+.tabs .tab {
+  background: transparent; /* let frosted panel show through */
+  border: none;
+  color: var(--slate-700);
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Active tab pops */
+.tabs .tab.active {
+  background: var(--emerald-500);
+  color: white;
+  box-shadow: var(--shadow-emerald);
+}
+
+/* Hover state */
+.tabs .tab:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--emerald-800);
+}
