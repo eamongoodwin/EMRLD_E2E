@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key-forge - Secure Messenger</title>
+
+    <!-- CSP Header (prefer server-side headers for HSTS, X-Content-Type-Options, etc.) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests;">
+
+    <!--
+    PRODUCTION: Move these to server response headers for proper enforcement:
+    Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+    -->
+
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="/logo_ani01.svg" type="image/svg+xml">
     <meta name="description" content="Quantum-Grade Encryption. Secure end-to-end encrypted messaging with EMRLD Chain technology.">
@@ -15,23 +26,28 @@
             <!-- Initial Verification Screen -->
             <div id="verificationScreen">
                 <div class="header">
-                    <div class="flex-center-mb">
-                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo glow-img" onerror="this.style.display='none';">
-                       <!--<img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';"> --> 
+                    <div class="logo-container">
+                        <img src="/keyforge.svg" alt="Keyforge" class="logo-text">
+                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo-icon">
                     </div>
                     <p class="subtitle">Secure Access Verification</p>
                 </div>
 
                 <div class="card card-centered">
-                    <img src="/shield.svg" alt="Shield" class="img-md img-inline">
+                    <div class="text-center mb-6">
+                        <img src="/shield.svg" alt="Shield" class="img-md">
+                    </div>
                     <h3 class="h3-center">Security Check</h3>
-                    <p class="text-center text-gray mb-6">
-                        Please complete the security verification to access Key-forge secure messaging.
-                    </p>
 
-                    <!-- Turnstile widget removed for testing -->
-
-                    <!-- Invisible turnstile widget for token minting -->
+                    <!-- Visible Turnstile widget for first verification -->
+                    <div class="text-center mb-6">
+                        <div id="ts-visible"
+                             class="cf-turnstile"
+                             data-sitekey="0x4AAAAAAB1C2uOH0-FlPCYd"
+                             data-theme="auto"
+                             data-callback="onFirstVerify">S
+                        </div>
+                    </div>
 
                     <div id="verificationStatus" aria-live="polite"></div>
                 </div>
@@ -40,9 +56,9 @@
             <!-- Setup Screen -->
             <div id="setupScreen" class="hidden">
                 <div class="header">
-                    <div class="flex-center-mb">
-                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo glow-img" onerror="this.style.display='none';">
-                        <!--<img src="/keyforge.svg" alt="Keyforge" class="img-lg glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>';"> --> 
+                    <div class="logo-container">
+                        <img src="/keyforge.svg" alt="Keyforge" class="logo-text">
+                        <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo-icon">
                     </div>
                     <p class="subtitle">Quantum Secure Messaging.</p>
                 </div>
@@ -133,9 +149,10 @@
             <!-- Main Chat Interface -->
             <div id="chatScreen" class="hidden">
                 <div class="chat-header">
-                    <div class="flex-align-center">
-                        <img src="/logo_ani01.svg" alt="Keyforge" class="logo" onerror="this.style.display='none';">
-                      <!--  <img src="/keyforge.svg" alt="Keyforge" class="chat-header-logo glow-img" onerror="this.innerHTML='<h1 class=\'keyforge-logo-fallback\'>Keyforge</h1>'"> --> 
+                    <div class="chat-logo-container">
+                        <img src="/keyforge.svg" alt="Keyforge" class="chat-logo-text" onerror="this.style.display='none'; document.getElementById('logo-fallback-3').hidden=false;">
+                        <span id="logo-fallback-3" hidden style="color: var(--emerald-100); font-size: 1.2rem; font-weight: 600; height: 30px; display: flex; align-items: center;">Keyforge</span>
+                        <img src="/logo_ani01.svg" alt="Keyforge" class="chat-logo-icon" onerror="this.style.display='none';">
                         <div class="ml-3">
                             <h1 id="roomTitle" class="chat-room-title">room title</h1>
                         </div>
@@ -214,15 +231,128 @@
         let messageCache = new Map();
         let lastMessageId = null;
         let optimisticMessages = new Map();
-        let isVerified = false;
-        let savedTurnstileToken = null;
+        let tsInvisibleWidgetId = null;
+
+        // Session-scoped verification
+        const VERIFIED_KEY = "turnstile:v1:verifiedAt";
+        const VERIFIED_TTL_MS = 30 * 60 * 1000; // 30 minutes
+
+        function isSessionVerified() {
+            const t = Number(sessionStorage.getItem(VERIFIED_KEY) || 0);
+            return t && (Date.now() - t) < VERIFIED_TTL_MS;
+        }
+
+        // Robust TokenManager with single-flight and TTL
+        const TokenManager = (() => {
+            let cached = { token: null, exp: 0, inflight: null };
+
+            async function mint(action = 'generic') {
+                const NOW = Date.now();
+                if (cached.token && NOW < cached.exp) return cached.token;
+
+                if (cached.inflight) return cached.inflight;
+
+                cached.inflight = new Promise((resolve, reject) => {
+                    try {
+                        mountInvisibleWidget();
+                        if (!window.turnstile || !tsInvisibleWidgetId) {
+                            throw new Error('Turnstile widget not ready');
+                        }
+
+                        turnstile.execute(tsInvisibleWidgetId, { action })
+                            .then(token => {
+                                cached.token = token;
+                                cached.exp = NOW + 90 * 1000; // 90s TTL
+                                cached.inflight = null;
+                                resolve(token);
+                            })
+                            .catch(err => {
+                                cached.inflight = null;
+                                reject(err);
+                            });
+                    } catch (e) {
+                        cached.inflight = null;
+                        reject(e);
+                    }
+                });
+                return cached.inflight;
+            }
+
+            function clear() {
+                cached = { token: null, exp: 0, inflight: null };
+            }
+
+            return { mint, clear };
+        })();
+
+        // Widget management
+        function mountInvisibleWidget() {
+            if (tsInvisibleWidgetId) return;
+            if (!window.turnstile) return;
+
+            try {
+                tsInvisibleWidgetId = turnstile.render('#ts-invisible', {
+                    sitekey: '0x4AAAAAAB1C2uOH0-FlPCYd',
+                    theme: 'auto',
+                    size: 'invisible'
+                });
+                console.log('Invisible Turnstile widget mounted');
+            } catch (error) {
+                console.error('Failed to mount invisible widget:', error);
+            }
+        }
+
+        // First verification callback
+        window.onFirstVerify = function(token) {
+            console.log('First verification successful');
+            sessionStorage.setItem(VERIFIED_KEY, String(Date.now()));
+            showMainInterface();
+        };
+
+        // Authenticated fetch with retry logic
+        async function authedFetch(url, body, action) {
+            const token = await TokenManager.mint(action);
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'cf-turnstile-response': token
+                },
+                body: JSON.stringify(body)
+            });
+
+            // Auto-retry on auth failure
+            if (res.status === 401 || res.status === 403) {
+                console.log('Token expired, refreshing...');
+                TokenManager.clear();
+                const fresh = await TokenManager.mint(action);
+                return fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'cf-turnstile-response': fresh
+                    },
+                    body: JSON.stringify(body)
+                });
+            }
+            return res;
+        }
+
+        // CSP Violation Monitoring (development aid)
+        window.addEventListener('securitypolicyviolation', e => {
+            console.warn('CSP blocked:', e.blockedURI, e.violatedDirective);
+        });
 
         // Initialize application
         function initializeApp() {
             console.log('Keyforge initialized');
 
-            // Skip verification for testing - go directly to main interface
-            showMainInterface();
+            // Check session verification
+            if (isSessionVerified()) {
+                showMainInterface();
+            } else {
+                showVerificationScreen();
+            }
 
             // Add loading states to buttons
             document.querySelectorAll('button').forEach(btn => {
@@ -244,15 +374,13 @@
 
         // Show main interface after verification
         function showMainInterface() {
-            // Hide verification screen but keep widget accessible by making it invisible instead of hidden
-            const verificationScreen = document.getElementById('verificationScreen');
-            verificationScreen.style.position = 'absolute';
-            verificationScreen.style.left = '-9999px';
-            verificationScreen.style.visibility = 'hidden';
-
+            document.getElementById('verificationScreen').classList.add('hidden');
             document.getElementById('setupScreen').classList.remove('hidden');
             document.getElementById('chatScreen').classList.add('hidden');
-            console.log('Showing main interface, widget should still be accessible');
+            console.log('Showing main interface');
+
+            // Mount invisible widget for later use
+            setTimeout(mountInvisibleWidget, 100);
 
             // Handle URL-based tab persistence and room prefilling
             const qs = new URLSearchParams(location.search);
@@ -292,17 +420,14 @@
             }
         }
 
-        // Verification disabled for testing - always allow actions
+        // Verification check
         function requireVerification(actionName) {
-            console.log(`requireVerification called for ${actionName} - bypassed for testing`);
-            return true; // Always allow actions when testing
-        }
-
-        // Dummy token generation for testing (no Turnstile)
-        async function mintToken(action = '') {
-            console.log(`Generating dummy token for action: ${action}`);
-            // Return a dummy token for testing
-            return 'DUMMY_TOKEN_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const verified = isSessionVerified();
+            if (!verified) {
+                console.log(`Action ${actionName} requires verification`);
+                showVerificationScreen();
+            }
+            return verified;
         }
 
         // Room Creation
@@ -327,30 +452,12 @@
 
 
             try {
-                // Get fresh Turnstile token using invisible widget
-                console.log('Getting fresh Turnstile token for room creation...');
-                const token = await mintToken('create_room');
-
-                if (!token) {
-                    isLoading = false;
-                    return;
-                }
-
-                // Create room
-                console.log('Creating room with fresh token...');
-                const createRes = await fetch('/api/room/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'cf-turnstile-response': token
-                    },
-                    body: JSON.stringify({
-                        roomName,
-                        password,
-                        token,
-                        'cf-turnstile-response': token
-                    })
-                });
+                // Create room with authenticated fetch
+                console.log('Creating room with authentication...');
+                const createRes = await authedFetch('/api/room/create', {
+                    roomName,
+                    password
+                }, 'create_room');
                 const createJson = await createRes.json();
                 console.log('Create room response:', createJson);
                 if (!createJson.success) {
@@ -363,22 +470,12 @@
                 // Prefill the join box for convenience
                 document.getElementById('joinRoomId').value = roomId;
 
-                // 3) Immediately join the room we just created
-                // Note: We can reuse the same token since Turnstile allows one verification per widget per session
+                // Auto-join the room we just created
                 console.log('Auto-joining room...');
-                const joinRes = await fetch('/api/room/join', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'cf-turnstile-response': token
-                    },
-                    body: JSON.stringify({
-                        roomId,
-                        password,
-                        token,
-                        'cf-turnstile-response': token
-                    })
-                });
+                const joinRes = await authedFetch('/api/room/join', {
+                    roomId,
+                    password
+                }, 'join_room');
                 const joinJson = await joinRes.json();
                 console.log('Join room response:', joinJson);
                 if (!joinJson.success) {
@@ -426,30 +523,12 @@
             }
             
             try {
-                // Get fresh Turnstile token using invisible widget
-                console.log('Getting fresh Turnstile token for room join...');
-                const token = await mintToken('join_room');
-
-                if (!token) {
-                    isLoading = false;
-                    return;
-                }
-
-                // Join room
-                console.log('Joining room with fresh token...');
-                const response = await fetch('/api/room/join', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'cf-turnstile-response': token
-                    },
-                    body: JSON.stringify({
-                        roomId,
-                        password,
-                        token,
-                        'cf-turnstile-response': token
-                    })
-                });
+                // Join room with authenticated fetch
+                console.log('Joining room with authentication...');
+                const response = await authedFetch('/api/room/join', {
+                    roomId,
+                    password
+                }, 'join_room');
                 
                 const result = await response.json();
                 
@@ -620,24 +699,12 @@
             optimisticMessages.set(optimisticId, messageDiv);
             
             try {
-                // Get fresh Turnstile token
-                const token = await mintToken('send_message');
-                if (!token) {
-                    throw new Error('Failed to get security token');
-                }
-
-                const response = await fetch('/api/message/send', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'cf-turnstile-response': token
-                    },
-                    body: JSON.stringify({
-                        roomId: currentRoom.id,
-                        message: messageText,
-                        senderName: currentUser
-                    })
-                });
+                // Send message with authenticated fetch
+                const response = await authedFetch('/api/message/send', {
+                    roomId: currentRoom.id,
+                    message: messageText,
+                    senderName: currentUser
+                }, 'send_message');
                 
                 const result = await response.json();
                 
@@ -839,8 +906,7 @@
         // Status Display
         function showStatus(message, type) {
             const statusDiv = document.getElementById('setupStatus');
-            const statusClass = type === 'success' ? 'success-message' : 'error-message';
-            statusDiv.innerHTML = `<div class="${statusClass}">${message}</div>`;
+            statusDiv.innerHTML = `<div class="status ${type === 'success' ? 'success' : 'error'}">${message}</div>`;
             setTimeout(() => statusDiv.innerHTML = '', 6000);
         }
 
@@ -934,14 +1000,24 @@
             }
         });
     </script>
-    <!-- Turnstile disabled for testing -->
-    <!-- Turnstile verification callbacks removed for testing -->
+
+    <!-- Turnstile Script with race-proofing callback -->
+    <script>
+        window.onloadTurnstileCallback = () => {
+            try {
+                if (typeof mountInvisibleWidget === 'function') mountInvisibleWidget();
+            } catch(_){}
+        };
+    </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" async defer></script>
+
+    <!-- Invisible Turnstile widget for programmatic execution -->
+    <div id="ts-invisible" style="position: absolute; left: -9999px; visibility: hidden;"></div>
 
     <noscript>
       <div class="error-message noscript-message">
         JavaScript is required to run Turnstile and use this app.
       </div>
     </noscript>
-    <!-- Invisible turnstile widget removed for testing -->
 </body>
 </html>
