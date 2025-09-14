@@ -33,9 +33,30 @@
   --slate-800: #1e293b;
   --slate-900: #0f172a;
   
-  /* Typography */
-  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Typography - Modern Messaging App Stack */
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+
+  /* Typography Scale */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 28px;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.3;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.5;
   
   /* Shadows and Effects */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -65,7 +86,12 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--slate-800);
-  line-height: 1.6;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Gem-like patterns for background */
@@ -131,19 +157,22 @@ body::before {
 }
 
 .header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   margin-bottom: 8px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
+  line-height: var(--line-height-tight);
 }
 
 .header .tagline {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
   opacity: 0.9;
   position: relative;
   z-index: 1;
+  line-height: var(--line-height-normal);
 }
 
 /* Room Info Bar */
@@ -190,15 +219,18 @@ body::before {
 
 .setup-screen h1 {
   color: var(--emerald-700);
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   margin-bottom: 12px;
+  line-height: var(--line-height-tight);
 }
 
 .setup-screen .subtitle {
   color: var(--slate-600);
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
   margin-bottom: 40px;
+  line-height: var(--line-height-normal);
 }
 
 .info-banner {
@@ -208,7 +240,9 @@ body::before {
   padding: 20px;
   border-radius: 16px;
   margin-bottom: 32px;
-  font-size: 15px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-relaxed);
   box-shadow: var(--shadow-md);
 }
 
@@ -232,11 +266,13 @@ body::before {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  font-family: var(--font-system);
   border-radius: 8px;
   transition: all 0.2s ease;
   color: var(--slate-600);
+  line-height: var(--line-height-normal);
 }
 
 .tab.active {
@@ -265,9 +301,10 @@ body::before {
 label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--slate-700);
-  font-size: 14px;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
 }
 
 input[type="text"],
@@ -277,10 +314,13 @@ textarea {
   padding: 14px 16px;
   border: 2px solid var(--slate-200);
   border-radius: 12px;
-  font-size: 15px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
   transition: all 0.2s ease;
   background: white;
   font-family: var(--font-system);
+  color: var(--slate-700);
 }
 
 input:focus,
@@ -337,10 +377,11 @@ textarea:focus {
 }
 
 .message-header {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--slate-700);
   margin-bottom: 8px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -349,18 +390,22 @@ textarea:focus {
 .message-content {
   color: var(--slate-700);
   word-wrap: break-word;
-  line-height: 1.5;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
 }
 
 .encryption-badge {
   background: var(--gradient-emerald);
   color: white;
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   padding: 4px 8px;
   border-radius: 6px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-system);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1;
   box-shadow: var(--shadow-sm);
 }
 
@@ -456,7 +501,9 @@ textarea:focus {
 .features h3 {
   color: var(--emerald-700);
   margin-bottom: 16px;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
 }
 
 .features ul {
@@ -469,7 +516,9 @@ textarea:focus {
   color: var(--slate-700);
   display: flex;
   align-items: center;
-  font-size: 15px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
 }
 
 .features li::before {
@@ -715,8 +764,10 @@ textarea:focus-visible {
   color: white;
   padding: 8px 16px;
   border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-system);
+  line-height: 1;
   box-shadow: var(--shadow-sm);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -903,9 +954,10 @@ h1.keyforge-logo-fallback {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   font-family: var(--font-system);
+  line-height: var(--line-height-normal);
   transition: all 0.2s ease;
   box-shadow: var(--shadow-md);
   min-width: 120px;
