@@ -1,4 +1,4 @@
-# EMRLD_E2E — Key-Forge Secure Messenger
+# EMRLD_E2E: Key-forge Secure Messenger
 
 > **Quantum-Grade End-to-End Encrypted Messaging** powered by the **EMRLD Chain** (Enhanced Multi-Round Layered Diffusion).
 
