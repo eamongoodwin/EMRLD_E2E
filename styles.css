@@ -312,11 +312,11 @@ body::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  transform: translateX(-100%);
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
-  transition: left 0.4s ease;
+  transition: transform 0.4s ease;
 }
 
 .tab.active {
@@ -333,7 +333,7 @@ body::before {
 }
 
 .tab:hover:before {
-  left: 100%;
+  transform: translateX(100%);
 }
 
 .tab:active {
@@ -615,7 +615,7 @@ textarea:focus {
 }
 
 .logo-text {
-  height: 40px;
+  height: 120px;
   width: auto;
 }
 
@@ -651,7 +651,7 @@ textarea:focus {
 }
 
 .chat-logo-text {
-  height: 80px;
+  height: 120px;
   width: auto;
 }
 
@@ -704,6 +704,14 @@ textarea:focus {
   background: linear-gradient(90deg, var(--slate-200) 25%, var(--slate-100) 50%, var(--slate-200) 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Button loading state - prevents conflict with global loading */
+.btn.is-loading {
+  background: linear-gradient(90deg, var(--slate-200) 25%, var(--slate-100) 50%, var(--slate-200) 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  pointer-events: none;
 }
 
 /* Responsive Design */
@@ -949,6 +957,7 @@ progress {
 
 .keyforge-logo {
   height: 120px;
+  width: auto;
   margin-left: 8px;
 }
 
@@ -1143,24 +1152,9 @@ h1.keyforge-logo-fallback {
   overflow: hidden;
 }
 
-.btn:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
 .btn:hover {
   transform: translateY(-2px) scale(1.02);
   opacity: 0.95;
-}
-
-.btn:hover:before {
-  left: 100%;
 }
 
 .btn:active {
