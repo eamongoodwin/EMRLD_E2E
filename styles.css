@@ -458,11 +458,15 @@ textarea:focus {
 
 /* Input Area */
 .input-area {
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px;
   background: white;
   border-top: 1px solid var(--slate-200);
 }
-
+/*
 .input-group {
   display: flex;
   gap: 12px;
@@ -497,6 +501,44 @@ textarea:focus {
 .input-group input[type="text"]::placeholder {
   color: var(--slate-400);
   font-weight: var(--font-weight-normal);
+}
+*/ 
+/* Input wrapper styling */
+.input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid var(--emerald-400);
+  border-radius: 12px;
+  padding: 0 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 12px 0;
+  font-size: var(--font-size-base);
+  background: transparent;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--emerald-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+/* Button row */
+.composer-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.composer-actions .btn {
+  flex: 1; /* keeps them consistent width on mobile */
 }
 
 /* Decrypt Area */
@@ -1441,4 +1483,13 @@ textarea {
 /* Optional: on large viewports, keep stack order but let the buttons row and info card breathe */
 @container (min-width: 900px) {
   .composer-actions { gap: 16px; }
+}
+
+.room-info .room-id-clickable {
+  color: #ffffff;          /* white for visibility */
+  font-weight: 600;        /* makes it stand out */
+}
+
+.room-info .room-id-clickable:hover {
+  color: var(--emerald-200); /* light green on hover */
 }
