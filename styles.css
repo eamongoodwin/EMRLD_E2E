@@ -1552,3 +1552,18 @@ textarea {
   margin: 0 auto;
 }
 
+/* Add side padding inside the setup screen */
+.setup-screen {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Alternatively, constrain inputs so they don’t stretch edge-to-edge */
+.setup-screen input[type="text"],
+.setup-screen input[type="password"],
+.setup-screen textarea {
+  width: 100%;
+  max-width: 95%; /* or 90% if you want more space */
+  margin: 0 auto; /* keeps them centered */
+}
+
