@@ -1659,3 +1659,8 @@ textarea {
 
 /* remove any old checkmark bullet styling */
 .features li::marker{ content:none; }
+
+:root {
+  color-scheme: light !important;
+}
+
