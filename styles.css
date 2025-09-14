@@ -1,6 +1,5 @@
 /* 
- * Emerald City - Secure Messenger Styles
- * "No Wizard Needed - Just Quantum-Grade Encryption"
+ * Keyforge Styles
  */
 
 :root {
@@ -727,8 +726,139 @@ textarea:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .pulse {
     animation: none;
   }
+}
+
+/* ============================================
+   Additional CSS Classes for Inline Styles
+   ============================================ */
+
+/* Header and Logo Styles */
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.keyforge-logo {
+  height: 120px;
+  margin-left: 8px;
+}
+
+.keyforge-logo-fallback {
+  margin: 0;
+  color: var(--emerald-700);
+}
+
+.chat-header-logo {
+  height: 100px;
+  margin-left: 8px;
+}
+
+/* Card and Container Styles */
+.verification-card {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.verification-text {
+  text-align: center;
+  color: var(--slate-600);
+  margin-bottom: 25px;
+}
+
+.security-check-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Shield Icon Styles */
+.shield-icon {
+  width: 120px;
+  height: 120px;
+  vertical-align: middle;
+  margin-right: 12px;
+}
+
+/* Chat Header Specific Styles */
+.chat-header-content {
+  display: flex;
+  align-items: center;
+}
+
+.chat-room-title {
+  margin-left: 12px;
+}
+
+.chat-room-title h1 {
+  font-size: 1.2rem;
+}
+
+/* Clickable Room ID */
+.room-id-clickable {
+  cursor: pointer;
+  color: var(--emerald-700);
+  text-decoration: underline;
+}
+
+.room-id-clickable:hover {
+  color: var(--emerald-600);
+}
+
+/* Message Timestamp */
+.message-timestamp {
+  color: var(--slate-500);
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+/* Status Badge Variants */
+.encryption-badge.sending {
+  background: #f59e0b;
+}
+
+.encryption-badge.encrypted {
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.encrypted-text {
+  color: #991b1b;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+/* NoScript Message */
+.noscript-message {
+  margin-top: 10px;
+}
+
+/* Container Classes to Replace Complex Inline Styles */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-center-mb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.flex-align-center {
+  display: flex;
+  align-items: center;
+}
+
+.ml-3 {
+  margin-left: 12px;
 }
