@@ -128,11 +128,12 @@ body::before {
 .app {
   width: 100%;
   max-width: 900px;
-  height: 90vh;
+  min-height: 90vh;
+  height: auto;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 20px;
-  overflow: hidden;
+  overflow-y: auto;
   box-shadow: var(--shadow-emerald);
   display: flex;
   flex-direction: column;
