@@ -55,12 +55,12 @@
                         <img src="/keyforge.svg" alt="Keyforge" class="logo-text">
                         <img src="/logo_ani01.svg" alt="Keyforge Logo" class="logo-icon">
                     </div>
-                    <p class="subtitle">Quantum Secure Messaging.</p>
+                    <p class="subtitle">Secure Messaging</p>
                 </div>
                 
                 <div class="info-banner">
                     <strong>Enhanced Multi-Round Layered Diffusion (EMRLD) Chain</strong><br>
-                    Resilient • Layered • Quantum-Ready
+                    Resilient • Layered • Quantum Secure
                 </div>
                 
                 <div class="tabs" role="tablist" aria-label="Room actions">
@@ -506,7 +506,7 @@
 
             document.getElementById('roomTitle').textContent = currentRoom.name || 'Room';
             document.getElementById('roomDetails').innerHTML =
-                `Room ID: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • Click Forge Invite to share Room.`;
+                `Room ID: <span id="roomIdSpan" onclick="copyRoomId()" class="room-id-clickable" title="Click to copy Room ID">${currentRoom.id}</span> • User: ${currentUser} • "Forge Invite" to share`;
 
             const box = document.getElementById('messagesContainer');
             box.innerHTML = '';
