@@ -1664,3 +1664,11 @@ textarea {
   color-scheme: light !important;
 }
 
+.message .encryption-badge {
+  font-size: 0.25rem;   /* much smaller text */
+  padding: 1px 3px;     /* shrink badge box */
+  border-radius: 3px;   /* smaller rounded corners */
+  transform: scale(0.75); /* 75% of original size */
+  transform-origin: left center; /* keeps alignment neat */
+}
+
