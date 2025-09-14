@@ -1788,3 +1788,15 @@ textarea {
   justify-content: flex-start;
   overflow-y: auto;
 }
+
+:root {
+  color-scheme: light !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  body,
+  .app {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}
