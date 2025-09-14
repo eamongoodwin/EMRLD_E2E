@@ -1691,3 +1691,77 @@ textarea {
   background-color: #92400e;   /* pressed shade */
   transform: translateY(0);
 }
+
+/* ===== CONTRAST + SELECTOR FIX PATCH (append at end) ===== */
+
+/* 1) ID/class mismatch: your HTML uses #setupScreen, CSS styles .setup-screen */
+#setupScreen {
+  padding: 48px;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+#setupScreen .subtitle {
+  color: var(--slate-600);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 40px;
+  line-height: var(--line-height-normal);
+}
+
+/* 2) Make headings/labels/list copy darker for AA+ legibility */
+#setupScreen .card h3 {                 /* "Start a Secure Chat" / "Join Existing Room" */
+  color: var(--slate-900);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* "Room Name", "Room Password", "Your Name" (both Create/Join) */
+#setupScreen .form-group label {
+  color: var(--slate-800);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Placeholders: a touch darker so they’re readable but still secondary */
+#setupScreen input::placeholder,
+#setupScreen textarea::placeholder {
+  color: var(--slate-500);
+  opacity: 1; /* ensure browsers don’t fade it further */
+}
+
+/* 3) Features card: "Key-forge Security" heading + list items */
+.features-card .features h3 {
+  color: var(--slate-900);
+  font-weight: var(--font-weight-bold);
+}
+.features-card .features li {
+  color: var(--slate-800);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Make the svg-bullet feel a bit stronger next to darker text */
+.features-card .features li::before {
+  opacity: 0.9;
+}
+
+/* 4) Dark theme: tokens already flip, but these ensure excellent contrast */
+@media (prefers-color-scheme: dark) {
+  #setupScreen .card h3,
+  .features-card .features h3 { color: var(--slate-800); }
+  #setupScreen .form-group label,
+  .features-card .features li { color: var(--slate-700); }
+  #setupScreen input::placeholder,
+  #setupScreen textarea::placeholder { color: var(--slate-500); }
+}
+
+/* If you’re using data-theme="dark" toggles */
+[data-theme="dark"] #setupScreen .card h3,
+[data-theme="dark"] .features-card .features h3 { color: var(--slate-800); }
+[data-theme="dark"] #setupScreen .form-group label,
+[data-theme="dark"] .features-card .features li { color: var(--slate-700); }
+[data-theme="dark"] #setupScreen input::placeholder,
+[data-theme="dark"] #setupScreen textarea::placeholder { color: var(--slate-500); }
